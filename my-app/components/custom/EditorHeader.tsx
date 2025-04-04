@@ -9,7 +9,7 @@ function EditorHeader() {
         <div>
 
         </div>
-        <div>
+        <div className=''>
             <Button variant="ghost" >Send test email</Button>
             <Button >Save template</Button>
         </div>
