@@ -40,19 +40,6 @@ app.get("/auth-url", (req, res) => {
   });
   res.json({ url });
 });
-app.get("/auth-url", (req, res) => {
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "consent",
-    scopes: [
-      "https://www.googleapis.com/auth/gmail.readonly",
-      "https://www.googleapis.com/auth/gmail.send",
-      "https://www.googleapis.com/auth/gmail.modify",
-      "https://www.googleapis.com",
-    ],
-  });
-  res.json({ url });
-});
 
 const TOKEN_PATH = "tokens.json";
 
@@ -191,6 +178,130 @@ app.get("/emails", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch emails" });
   }
 });
+
+app.get("/emails/:id", async (req, res) => {
+  try {
+    console.log("Fetching email details...");
+
+    await ensureValidToken();
+    console.log("Token is valid, proceeding to fetch email details...");
+
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "Email ID is required" });
+    }
+
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+    const email = await gmail.users.messages.get({
+      userId: "me",
+      id,
+      format: "raw",
+    });
+
+    if (!email.data) {
+      return res.status(404).json({ error: "Email not found" });
+    }
+
+    if (!email.data.raw) {
+      return res.status(500).json({ error: "Email raw content not available" });
+    }
+
+    // Parse the raw email
+    const parsedEmail = await simpleParser(
+      Buffer.from(email.data.raw, "base64")
+    );
+    res.json({
+      id: email.data.id,
+      threadId: email.data.threadId,
+      from: parsedEmail.from?.text || "Unknown",
+      to: parsedEmail.to?.text || "Unknown",
+      cc: parsedEmail.cc?.text || "",
+      bcc: parsedEmail.bcc?.text || "",
+      subject: parsedEmail.subject || "No Subject",
+      date: parsedEmail.date || new Date(),
+      text: parsedEmail.text || "",
+      html: parsedEmail.html || parsedEmail.textAsHtml || "",
+      attachments: parsedEmail.attachments || [],
+    });
+  } catch (error) {
+    console.error("Error fetching email:", error);
+    res.status(500).json({
+      error: "Failed to fetch email",
+      details: error.message,
+    });
+  }
+});
+
+app.delete("/emails/:id", async (req, res) => {
+  try {
+    console.log("🔴 Deleting email...");
+
+    await ensureValidToken();
+    console.log("✅ Token is valid, proceeding with deletion...");
+
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "❌ Email ID is required" });
+    }
+
+    console.log(`🗑️ Attempting to delete email with ID: ${id}`);
+
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+
+    // Delete the email
+    const response = await gmail.users.messages.delete({
+      userId: "me",
+      id,
+    });
+
+    console.log(`✅ Email with ID ${id} deleted successfully!`);
+
+    res.json({ message: "✅ Email deleted successfully!" });
+  } catch (error) {
+    console.error("❌ Error deleting email:", error);
+
+    // More specific error responses
+    if (error.message.includes("Unauthorized")) {
+      return res.status(401).json({
+        error: "Authentication required. Please login again.",
+      });
+    }
+    if (error.code === 404) {
+      return res.status(404).json({ error: "Email not found" });
+    }
+
+    res.status(500).json({
+      error: "❌ Failed to delete email",
+      details: error.message,
+    });
+  }
+});
+app.post("/send-email", async (req, res) => {
+    try {
+      await ensureValidToken();
+      const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+      const { to, subject, body } = req.body;
+  
+      const rawEmail = [`To: ${to}`, `Subject: ${subject}`, "", body].join("\n");
+  
+      const encodedMessage = Buffer.from(rawEmail)
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+  
+      await gmail.users.messages.send({
+        userId: "me",
+        requestBody: { raw: encodedMessage },
+      });
+  
+      res.json({ message: "✅ Email Sent Successfully!" });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      res.status(500).json({ error: "Failed to send email" });
+    }
+  });
+
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
