@@ -192,7 +192,7 @@ export default function CategoryPage() {
             <Header />
           </div>
 
-          <div className="h-[90%] flex  w-[95%]  m-auto ">
+          <div className="h-[90%] flex w-[95%] m-auto">
             <div className="overflow-y-auto h-screen max-h-[calc(100vh-10%)] w-2/3 p-6 bg-gray-900 rounded-lg shadow-md transition-all duration-300">
               {!isSignedIn ? (
                 <div className="flex justify-center mt-6">
@@ -229,7 +229,7 @@ export default function CategoryPage() {
                         return (
                           <div
                             key={idx}
-                            className="overflow-y-auto group border p-4 rounded shadow bg-black hover:shadow-lg transition cursor-pointer flex justify-between items-center gap-x-4"
+                            className="overflow-y-auto group border p-4 rounded-lg shadow-2xl  bg-gray-800 hover:shadow-lg transition-all duration-300 cursor-pointer flex justify-between items-center gap-x-4 transform hover:scale-[1.06]"
                             onClick={() => handleEmailClick(idx)}
                           >
                             {/* Left Section: Sender & Date */}
@@ -237,10 +237,9 @@ export default function CategoryPage() {
                               <p className="font-medium text-white">
                                 📧 {senderName}
                               </p>
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-gray-100 text-sm">
                                 {email.date}
                               </p>
-
                               {/* Always show snippet in the list view, never full content */}
                               <p className="text-gray-600 mt-2">
                                 {getTextPreview(email)}...
@@ -271,7 +270,7 @@ export default function CategoryPage() {
               )}
             </div>
 
-            <div className="w-1/3 m-8  border-black border-2 rounded-lg ">
+            <div className="w-1/3 m-8 border-black border-2 rounded-lg">
               <ChatBot />
             </div>
           </div>

@@ -1,214 +1,6 @@
-// "use client";
-// import { UserButton, useUser } from "@clerk/nextjs";
-// import { SidebarTrigger } from "@/components/ui/sidebar";
-// import { ModeToggle } from "./toggle";
-// import { useCompose } from "../context/ComposeContext";
-// import { cn } from "@/lib/utils";
-// import {
-//   //   fetchEmails,
-//   GenerateLayout,
-//   handleRefine,
-//   handleSendEmail,
-//   initializeTokenAndFetchEmails,
-// } from "../helper";
-// import fetchEmails from "@/app/mail/page";
-// import React, { useEffect } from "react";
-// import { redirect } from "next/navigation";
-// // import { ComboboxDemo } from "@/components/ui/dropdown";
-// import {
-//   Command,
-//   CommandEmpty,
-//   CommandGroup,
-//   CommandInput,
-//   CommandItem,
-//   CommandList,
-// } from "@/components/ui/command";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover";
-// import { ChevronsUpDown, Check } from "lucide-react";
-
-// const options = [
-//   { value: "create", label: "Create" },
-//   { value: "compose", label: "Compose" },
-//   { value: "compose-with-ai", label: "Compose with AI" },
-// ];
-
-// // import { Command, CommandInput } from "@/components/ui/command";
-// // import fetchEmails from "@/app/mail/page";
-// export default function Header() {
-//   const { isSignedIn, user } = useUser();
-//   const [open, setOpen] = React.useState(false);
-//   const [value, setValue] = React.useState("");
-//   const {
-//     setIsComposeOpen,
-//     setComposeWithAi,
-//     setIsQuickComposeOpen,
-//     isQuickComposeOpen,
-//     isComposeOpen,
-//     composeWithAi,
-//     recipientType,
-//     setRecipientType,
-//     tone,
-//     setTone,
-//     purpose,
-//     setPurpose,
-//     to,
-//     setTo,
-//     subject,
-//     setSubject,
-//     body,
-//     setBody,
-//     isLoading,
-//     setIsLoading,
-//     token,
-//     setToken,
-//     setEmails,
-//     emails,
-//   } = useCompose();
-
-//   const fetchEmailsCallback = () => fetchEmails;
-
-//   useEffect(() => {
-//     initializeTokenAndFetchEmails(setToken, fetchEmailsCallback);
-//   }, [token]);
-
-//   const handlecreate = () => {
-//     redirect("/dashboard/create");
-//   };
-
-//   const handleActionSelect = (selectedValue) => {
-//     switch (selectedValue) {
-//       case "create":
-//         handlecreate();
-//         break;
-//       case "compose":
-//         setIsComposeOpen(true);
-//         setComposeWithAi(false);
-//         break;
-//       case "compose-with-ai":
-//         setIsQuickComposeOpen(true);
-//         setComposeWithAi(true);
-//         break;
-//       default:
-//         break;
-//     }
-//     setValue(selectedValue);
-//     setOpen(false);
-//   };
-
-//   return (
-//     //   <Popover open={open} onOpenChange={setOpen}>
-//     //   <PopoverTrigger asChild>
-//     //     <Button
-//     //       variant="outline"
-//     //       role="combobox"
-//     //       aria-expanded={open}
-//     //       className="w-[200px] justify-between"
-//     //     >
-//     //       {value
-//     //         ? frameworks.find((framework) => framework.value === value)
-//     //             ?.label
-//     //         : "Select framework..."}
-//     //       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-//     //     </Button>
-//     //   </PopoverTrigger>
-//     //   <PopoverContent className="w-[200px] p-0">
-//     //     <Command>
-//     //       <CommandInput placeholder="Search framework..." />
-//     //       <CommandList>
-//     //         <CommandEmpty>No framework found.</CommandEmpty>
-//     //         <CommandGroup>
-//     //           {frameworks.map((framework) => (
-//     //             <CommandItem
-//     //               key={framework.value}
-//     //               value={framework.value}
-//     //               onSelect={(currentValue) => {
-//     //                 setValue(currentValue === value ? "" : currentValue);
-//     //                 setOpen(false);
-//     //               }}
-//     //             >
-//     //               <Check
-//     //                 className={cn(
-//     //                   "mr-2 h-4 w-4",
-//     //                   value === framework.value
-//     //                     ? "opacity-100"
-//     //                     : "opacity-0"
-//     //                 )}
-//     //               />
-//     //               {framework.label}
-//     //             </CommandItem>
-//     //           ))}
-//     //         </CommandGroup>
-//     //       </CommandList>
-//     //     </Command>
-//     //   </PopoverContent>
-//     // </Popover>
-//     <header
-//       suppressHydrationWarning={true}
-//       className="flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700"
-//     >
-//       {isSignedIn && <SidebarTrigger />}
-//       <div className="flex space-x-4">
-//         {token && (
-//           <Popover open={open} onOpenChange={setOpen}>
-//             <PopoverTrigger asChild>
-//               <Button
-//                 variant="outline"
-//                 role="combobox"
-//                 aria-expanded={open}
-//                 className="w-[200px] justify-between bg-red-500 hover:bg-red-600 text-white"
-//               >
-//                 {value
-//                   ? options.find((option) => option.value === value)?.label
-//                   : "Email Actions..."}
-//                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-//               </Button>
-//             </PopoverTrigger>
-//             <PopoverContent className="w-[200px] p-0">
-//               <Command>
-//                 <CommandInput placeholder="Search actions..." />
-//                 <CommandList>
-//                   <CommandEmpty>No action found.</CommandEmpty>
-//                   <CommandGroup>
-//                     {options.map((option) => (
-//                       <CommandItem
-//                         key={option.value}
-//                         value={option.value}
-//                         onSelect={(currentValue) => {
-//                           handleActionSelect(currentValue);
-//                         }}
-//                       >
-//                         <Check
-//                           className={cn(
-//                             "mr-2 h-4 w-4",
-//                             value === option.value ? "opacity-100" : "opacity-0"
-//                           )}
-//                         />
-//                         {option.label}
-//                       </CommandItem>
-//                     ))}
-//                   </CommandGroup>
-//                 </CommandList>
-//               </Command>
-//             </PopoverContent>
-//           </Popover>
-//         )}
-//       </div>
-//       <ModeToggle />
-//       <UserButton />
-//     </header>
-//   );
-// }
-
 "use client";
 import { UserButton, useUser } from "@clerk/nextjs";
-// import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ModeToggle } from "./toggle";
-// import { useCompose } from "../context/ComposeContext";
 import { cn } from "@/lib/utils";
 import {
   GenerateLayout,
@@ -217,8 +9,8 @@ import {
   initializeTokenAndFetchEmails,
 } from "../helper";
 import fetchEmails from "@/app/mail/page";
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation"; // Changed from redirect to useRouter
+import React, { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Command,
   CommandEmpty,
@@ -233,7 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronsUpDown, Check } from "lucide-react";
+import { ChevronsUpDown, Check, X, Send, Edit3, Mail } from "lucide-react";
 import { useCompose } from "@/context/ComposeContext";
 
 const options = [
@@ -243,10 +35,12 @@ const options = [
 ];
 
 export default function Header() {
-  const { isSignedIn, user } = useUser();
-  const router = useRouter(); // Use the router hook
+  const {  user } = useUser();
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+  const quickComposeRef = useRef(null);
+  const fullComposeRef = useRef(null);
   const {
     setIsComposeOpen,
     setComposeWithAi,
@@ -270,8 +64,7 @@ export default function Header() {
     setIsLoading,
     token,
     setToken,
-    setEmails,
-    emails,
+ 
   } = useCompose();
 
   const fetchEmailsCallback = () => fetchEmails;
@@ -280,7 +73,44 @@ export default function Header() {
     initializeTokenAndFetchEmails(setToken, fetchEmailsCallback);
   }, [token]);
 
-  // Modified to use router.push instead of redirect
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close Quick Compose modal when clicking outside
+      if (
+        isQuickComposeOpen &&
+        quickComposeRef.current &&
+        !quickComposeRef.current.contains(event.target)
+      ) {
+        setIsQuickComposeOpen(false);
+        clearInputs();
+      }
+
+      // Close Full Compose modal when clicking outside
+      if (
+        isComposeOpen &&
+        fullComposeRef.current &&
+        !fullComposeRef.current.contains(event.target)
+      ) {
+        setIsComposeOpen(false);
+        clearInputs();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isQuickComposeOpen, isComposeOpen]);
+
+  const clearInputs = () => {
+    setRecipientType("");
+    setTone("");
+    setPurpose("");
+    setTo("");
+    setSubject("");
+    setBody("");
+  };
+
   const handlecreate = () => {
     router.push("/dashboard/create");
   };
@@ -306,7 +136,6 @@ export default function Header() {
     setOpen(false);
   };
 
-  // Add debug logs to help troubleshoot
   useEffect(() => {
     if (isQuickComposeOpen) {
       console.log("Quick compose is open:", isQuickComposeOpen);
@@ -319,113 +148,159 @@ export default function Header() {
   return (
     <header
       suppressHydrationWarning={true}
-      className="sticky top-0  flex  p-6 bg-white max-w-full dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700"
+      className="sticky top-0 z-10 flex items-center w-full py-4 px-6 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm"
     >
-      {/* <div className="flex w-1/2 justify-start">
-        {isSignedIn && <SidebarTrigger />}
-      </div> */}
-      <div className="flex w-full space-x-4 items-center">
-        <div className="flex w-full justify-between space-x-4">
-          {token && (
-            <>
-              {/* For debugging purposes, add direct buttons */}
-              <div className=" h-10 w-40 object-contain">
-                <img src="/flow.png" alt="goflow" />
-              </div>
-              <div className="flex justify-end space-x-4 items-center">
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={open}
-                      className="w-[200px] justify-between p-6 bg-gradient-to-br from-green-400 to-blue-600 text-white"
-                    >
-                      {value
-                        ? options.find((option) => option.value === value)
-                            ?.label
-                        : "Email Actions..."}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search actions..." />
-                      <CommandList>
-                        <CommandEmpty>No action found.</CommandEmpty>
-                        <CommandGroup>
-                          {options.map((option) => (
-                            <CommandItem
-                              key={option.value}
-                              value={option.value}
-                              onSelect={(currentValue) => {
-                                console.log("Selected:", currentValue);
-                                handleActionSelect(currentValue);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  value === option.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {option.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <div className="scale-108">
-                  <ModeToggle />
-                </div>
-
-                <div className="scale-130 pt-1.5">
-                  <UserButton />
+      <div className="flex w-full items-center justify-between">
+        {token && (
+          <>
+            <div className="h-10 w-40 object-contain">
+              <img src="/flow.png" alt="goflow" className="h-full w-auto" />
+            </div>
+            <div className="flex items-center space-x-5">
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-48 h-10 justify-between bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white border-0 shadow-md transition-all duration-300 font-medium"
+                  >
+                    {value
+                      ? options.find((option) => option.value === value)?.label
+                      : "Email Actions"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-80" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-0 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md overflow-hidden">
+                  <Command className="border-0">
+                    <CommandInput
+                      placeholder="Search actions..."
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>No action found.</CommandEmpty>
+                      <CommandGroup>
+                        {options.map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            value={option.value}
+                            onSelect={(currentValue) => {
+                              console.log("Selected:", currentValue);
+                              handleActionSelect(currentValue);
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                value === option.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <div className="flex items-center space-x-4">
+                <ModeToggle />
+                <div className="scale-110">
+                  <UserButton afterSignOutUrl="/" />
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
+      </div>
 
-        {/* Quick Compose Modal */}
-        {isQuickComposeOpen && (
-          <div className="fixed inset-0 flex justify-center items-start z-50 backdrop-blur-lg bg-black/30 py-16">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Quick Compose
-              </h2>
-              <input
-                type="text"
-                placeholder="Recipient Type (e.g., boss, client, friend)"
-                value={recipientType}
-                onChange={(e) => setRecipientType(e.target.value)}
-                className="w-full p-3 border rounded mt-3"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Desired Tone (e.g., formal, friendly, apologetic)"
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-                className="w-full p-3 border rounded mt-3"
-                required
-              />
-              <textarea
-                placeholder="Purpose of the email..."
-                value={purpose}
-                onChange={(e) => setPurpose(e.target.value)}
-                className="w-full p-3 border rounded min-h-32 mt-3"
-                required
-              ></textarea>
+      {/* Quick Compose Modal */}
+      {isQuickComposeOpen && (
+        <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/40 backdrop-blur-sm">
+          <div
+            ref={quickComposeRef}
+            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-xl transform transition-all duration-300 border border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center">
+                <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mr-3">
+                  <Mail
+                    size={24}
+                    className="text-blue-600 dark:text-blue-300"
+                  />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                  Quick Compose with AI
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setIsQuickComposeOpen(false);
+                  clearInputs();
+                }}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-              <div className="flex justify-end gap-3 mt-4">
+            <div className="space-y-4">
+              {/* <div className="bg-blue-50 dark:bg-gray-700/40 p-4 rounded-lg mb-4">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Let AI help craft your email. Just provide some details about
+                  your recipient, tone, and purpose.
+                </p>
+              </div> */}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Recipient Type
+                </label>
+                <input
+                  type="text"
+                  placeholder="Boss, client, friend..."
+                  value={recipientType}
+                  onChange={(e) => setRecipientType(e.target.value)}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tone of Email
+                </label>
+                <input
+                  type="text"
+                  placeholder="Formal, friendly, apologetic..."
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Purpose of Email
+                </label>
+                <textarea
+                  placeholder="Describe what you want to say..."
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-40 resize-none transition-all shadow-sm"
+                  required
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-8">
                 <button
-                  onClick={() => setIsQuickComposeOpen(false)}
-                  className="text-gray-600 hover:text-gray-900"
+                  onClick={() => {
+                    setIsQuickComposeOpen(false);
+                    clearInputs();
+                  }}
+                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
@@ -443,91 +318,145 @@ export default function Header() {
                       setIsLoading,
                     });
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition-colors flex items-center"
+                  disabled={!recipientType || !tone || !purpose}
                 >
-                  OK
+                  <Mail size={18} className="mr-2" />
+                  Generate Email
                 </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Full Compose Modal */}
-        {isComposeOpen && (
-          <div className="fixed inset-0 flex justify-center items-start z-50 backdrop-blur-lg bg-black/30 py-16">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-              <h2 className="text-xl font-medium">Compose New Email</h2>
-              <form
-                onSubmit={(e) =>
-                  handleSendEmail(
-                    e,
-                    to,
-                    subject,
-                    body,
-                    setTo,
-                    setSubject,
-                    setBody,
-                    setIsLoading,
-                    setIsComposeOpen
-                  )
-                }
-                className="space-y-3"
+      {/* Full Compose Modal */}
+      {isComposeOpen && (
+        <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/40 backdrop-blur-sm">
+          <div
+            ref={fullComposeRef}
+            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 border border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center">
+                <div className="bg-green-100 dark:bg-green-900 p-3 rounded-full mr-3">
+                  <Mail
+                    size={22}
+                    className="text-gr  sas   een-600 dark:text-green-300"
+                  />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                  {composeWithAi ? "AI-Generated Email" : "Compose New Email"}
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setIsComposeOpen(false);
+                  clearInputs();
+                }}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
               >
+                <X size={20} />
+              </button>
+            </div>
+            {/* 
+            {composeWithAi && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-5">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  This email was generated with AI based on your specifications.
+                  You can edit it before sending or use "Refine with AI" to
+                  improve it.
+                </p>
+              </div>
+            )} */}
+
+            <form
+              onSubmit={(e) =>
+                handleSendEmail(
+                  e,
+                  to,
+                  subject,
+                  body,
+                  setTo,
+                  setSubject,
+                  setBody,
+                  setIsLoading,
+                  setIsComposeOpen
+                )
+              }
+              className="space-y-5"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  To
+                </label>
                 <input
                   type="email"
-                  placeholder="Recipient"
+                  placeholder="recipient@example.com"
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
-                  className="w-full p-3 border rounded"
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Subject
+                </label>
                 <input
                   type="text"
-                  placeholder="Subject"
+                  placeholder="Email subject"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full p-3 border rounded mt-3"
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                 />
+              </div>
+              <div className="">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Message
+                </label>
                 <textarea
-                  placeholder="Email Body"
+                  placeholder="Write your message here..."
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  className="w-full p-3 border rounded mt-3"
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-64 resize-none transition-all shadow-sm"
                 />
-                {/* Refine Button */}
-                {isComposeOpen && !composeWithAi && (
-                  <button
-                    onClick={async () => {
-                      setIsLoading(true);
-                      await handleRefine(body, setBody, setIsLoading);
-                      setIsLoading(false);
-                    }}
-                    type="button"
-                    className="text-white bg-gray-500 hover:bg-gray-600 mt-2 block w-full py-2 rounded"
-                  >
-                    {isLoading ? "Refining..." : "Refine"}
-                  </button>
-                )}
-                {/* Close Button */}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button
-                  onClick={() => setIsComposeOpen(false)}
+                  onClick={async () => {
+                    setIsLoading(true);
+                    await handleRefine(body, setBody, setIsLoading);
+                    setIsLoading(false);
+                  }}
                   type="button"
-                  className="text-white bg-red-500 hover:bg-red-600 mt-2 block w-full py-2 rounded"
+                  className="flex-1 flex items-center justify-center px-5 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading || !body.trim()}
                 >
-                  Close
+                  {isLoading ? (
+                    "Refining..."
+                  ) : (
+                    <>
+                      <Edit3 size={18} className="mr-2" />
+                      Refine with AI
+                    </>
+                  )}
                 </button>
-                {/* Send Button */}
+
                 <button
                   type="submit"
-                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded w-full transition"
+                  className="flex-1 flex items-center justify-center px-5 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading || !to || !body.trim()}
                 >
-                  📤 Send Email
+                  <Send size={18} className="mr-2" />
+                  Send Email
                 </button>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </header>
   );
 }

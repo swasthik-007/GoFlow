@@ -197,7 +197,8 @@ import dotenv from "dotenv";
 import Settings from "@/components/custom/Settings";
 import Sidebar from "@/components/sidebars";
 import Header from "@/app/components/Header";
-import { useCompose } from "@/app/context/ComposeContext";
+import { useCompose } from "@/context/ComposeContext";
+// import { useCompose } from "@/app/context/ComposeContext";
 
 dotenv.config();
 

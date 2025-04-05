@@ -6,9 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { useUser } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "../globals.css";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Check } from "lucide-react";
 import { useCompose } from "@/context/ComposeContext";
-// import { useCompose } from "../context/ComposeContext";
 
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 if (!apiKey) {
@@ -24,9 +23,9 @@ const ChatBot = () => {
   const [recipient, setRecipient] = useState("");
   const [query, setQuery] = useState(""); // Now used for AI-generated reply too
   const [emails, setEmails] = useState([]);
-  // const [loading, setLoading] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [isAskAI, setIsAskAI] = useState(true);
+  const [isRefining, setIsRefining] = useState(false);
   const { user } = useUser();
   const loggedInEmail = user?.primaryEmailAddress?.emailAddress || "";
   const textareaRef = useRef(null);
@@ -59,28 +58,6 @@ const ChatBot = () => {
     }
     setIsLoading(false);
   };
-
-  // const handleQuery = async () => {
-  //   if (!query.trim() || emails.length === 0) return;
-  //   const emailContext = emails
-  //     .map(
-  //       (email) =>
-  //         `From: ${email.from}\nSubject: ${email.subject}\nBody: ${email.body}`
-  //     )
-  //     .join("\n\n");
-
-  //   const chatSession = model.startChat({
-  //     history: [
-  //       {
-  //         role: "user",
-  //         parts: [{ text: `Emails:\n${emailContext}\n\nQuery: ${query}` }],
-  //       },
-  //     ],
-  //   });
-
-  //   const aiResponse = await chatSession.sendMessage(query);
-  //   setQuery(aiResponse.response.text()); // Now shows in input box
-  // };
 
   const handleQuery = async () => {
     if (!query.trim() || emails.length === 0) return;
@@ -162,35 +139,34 @@ const ChatBot = () => {
     setQuery(replyResponse.response.text()); // Place AI reply in input box
   };
 
-  // const sendReply = async () => {
-  //   if (!query.trim() || emails.length === 0) return;
+  const refineText = async () => {
+    if (!query.trim()) return;
 
-  //   const latestEmail = emails[0];
-  //   const emailPayload = {
-  //     to: latestEmail.from,
-  //     subject: ` ${latestEmail.subject}`,
-  //     body: query, // Sends the edited or AI-generated reply
-  //   };
+    setIsRefining(true);
 
-  //   try {
-  //     const response = await fetch("http://localhost:5000/send-email", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(emailPayload),
-  //     });
+    try {
+      const refinePrompt = `
+      Please refine the following email text to correct any spelling errors, improve vocabulary, 
+      enhance grammar, and make it more professional while maintaining the original meaning and tone:
+      
+      "${query}"
+      
+      Return only the corrected text without explanations or additional comments.
+      `;
 
-  //     if (!response.ok) {
-  //       console.error("Error sending email:", await response.text());
-  //       return;
-  //     }
+      const refineSession = model.startChat({
+        history: [{ role: "user", parts: [{ text: refinePrompt }] }],
+      });
 
-  //     alert("Email sent successfully! ✅"); // Show alert
-  //     setQuery(""); // Clear input box
-  //     console.log("Reply sent successfully!");
-  //   } catch (error) {
-  //     console.error("Error sending email:", error);
-  //   }
-  // };
+      const refinedResponse = await refineSession.sendMessage(refinePrompt);
+      setQuery(refinedResponse.response.text().trim());
+    } catch (error) {
+      console.error("Error refining text:", error);
+      alert("Error refining text. Please try again.");
+    } finally {
+      setIsRefining(false);
+    }
+  };
 
   const sendReply = async () => {
     if (!query.trim() || emails.length === 0) return;
@@ -238,15 +214,6 @@ const ChatBot = () => {
     }
   };
 
-  // const handleToggle = async () => {
-  //   setIsAskAI((prev) => {
-  //     if (prev === true) {
-  //       generateReply(); // Generate reply when switching to "Reply"
-  //     }
-  //     return !prev;
-  //   });
-  // };
-
   const handleToggle = async () => {
     setIsAskAI((prev) => {
       // Clear the query when toggling
@@ -258,6 +225,7 @@ const ChatBot = () => {
       return !prev;
     });
   };
+
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"; // Reset height
@@ -265,16 +233,18 @@ const ChatBot = () => {
         textareaRef.current.scrollHeight + "px"; // Set new height
     }
   }, [query]);
+
   useEffect(() => {
     // Clear the query whenever recipient changes
     setQuery("");
   }, [recipient]);
 
-  //CHANGED
-  // useEffect(() => {
-  //   <p className=" bg-gradient-to-br from-green-400 to-blue-600 animate-pulse ">Fetching emails...</p>;
-  //   setQuery("");
-  // }, [emails]);
+  useEffect(() => {
+    <p className="bg-gradient-to-br from-green-400 to-blue-600 animate-pulse">
+      Fetching emails...
+    </p>;
+    setQuery("");
+  }, [emails]);
 
   return (
     <div
@@ -282,24 +252,22 @@ const ChatBot = () => {
         isQuickComposeOpen || isComposeOpen ? "hidden" : ""
       }`}
     >
-      <div className="flex justify-between">
-        <h1 className="text-2xl flex items-center font-bold mb-4">
-          AI Email Assistant
-        </h1>
-        <img src="chat1.png" alt="" className="w-20 h-20" />
-      </div>
+      <h1 className="text-2xl  flex items-center text-center ml-20 font-bold mb-4">
+        AI Email Assistant
+      </h1>
+      {/* <img src="chat1.png" alt="" className="w-20 h-20" /> */}
+
       <div className="relative w-full">
-        <h2 className="text-xl font-semibold mb-4">Looking For:</h2>
+        <h2 className="text-xl font-semibold mb-2">Looking For:</h2>
         <input
           id="hs-floating-input-email"
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
           placeholder=" "
-          className="peer p-4 block w-full border border-gray-900 dark:border-neutral-700 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:text-neutral-400 dark:focus:ring-neutral-600
+          className="peer p-2 block w-full border border-gray-900 dark:border-neutral-700 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:text-neutral-400 dark:focus:ring-neutral-600
     focus:pt-6 focus:pb-2 "
         />
       </div>
-      {/* //CHANGED */}
       {emails.length > 0 ? (
         <p className="text-green-600 font-medium">
           {emails.length} emails found ✅
@@ -307,14 +275,14 @@ const ChatBot = () => {
       ) : (
         ""
       )}
-      <div className="mb-6">
+      <div className="mb-6 ">
         <h3 className="text-xl font-semibold mt-2 mb-2">
           Emails from {recipient}:
         </h3>
 
         <ul
           className={`overflow-y-auto overflow-x-hidden border p-3 rounded-lg shadow-md w-full
-  ${emails.length > 0 ? "max-h-[250px] min-h-[140px]" : "max-h-[140px]"}`}
+  ${emails.length > 0 ? "max-h-[200px] min-h-[140px]" : "max-h-[100px]"}`}
         >
           {emails.length > 0 ? (
             emails.map((email) => (
@@ -349,21 +317,38 @@ const ChatBot = () => {
       </div>
       <textarea
         ref={textareaRef}
-        className="w-full border p-3 mb-4  rounded-xl shadow-md
+        className="w-full border p-3 mb-4 rounded-xl shadow-md
     resize-none bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200
     border-gray-300 dark:border-gray-600 focus:outline-none 
-    focus:ring-2 focus:ring-blue-500 transition-all duration-200 max-h-[250px] overflow-y-auto"
+    focus:ring-2 focus:ring-blue-500 transition-all duration-200 max-h-[180px] overflow-y-auto"
         placeholder={isAskAI ? "Ask AI about these emails..." : "Your reply..."}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <div className="flex items-center">
+      <div className="flex items-center space-x-2">
         <button
           className="bg-gradient-to-br from-green-400 to-blue-600 text-white px-4 py-2 rounded"
           onClick={isAskAI ? handleQuery : sendReply}
         >
           {isAskAI ? "Ask AI" : "Reply"}
         </button>
+
+        {!isAskAI && (
+          <button
+            className="bg-gradient-to-br from-purple-400 to-indigo-600 text-white px-4 py-2 rounded flex items-center"
+            onClick={refineText}
+            disabled={isRefining || !query.trim()}
+          >
+            {isRefining ? (
+              <span className="flex items-center">Refining...</span>
+            ) : (
+              <span className="flex items-center">
+                <Sparkles className="w-4 h-4 mr-1" /> Refine
+              </span>
+            )}
+          </button>
+        )}
+
         <Switch
           checked={!isAskAI}
           onCheckedChange={handleToggle}
