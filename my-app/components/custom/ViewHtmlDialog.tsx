@@ -23,7 +23,7 @@ function ViewHtmlDialog({
 
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-      <DialogContent>
+      <DialogContent >
         <DialogHeader>
           <DialogTitle asChild>
             <div className="flex items-center justify-between">
@@ -36,7 +36,7 @@ function ViewHtmlDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogDescription asChild>
-          <div className="p-4 rounded-md text-sm overflow-auto max-h-96 bg-black text-white">
+          <div className="p-4 rounded-md text-sm overflow-auto max-h-96  bg-black text-white">
             <pre className="whitespace-pre-wrap break-all">
               {htmlCode ? htmlCode : "No HTML generated yet."}
             </pre>

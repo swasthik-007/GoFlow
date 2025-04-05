@@ -1,7 +1,7 @@
-import dedent from "dedent";
+import dedent from "dedent"
 
-export const AIPrompt = {
-  EMAIL_PROMPT: dedent`
+export const AIPrompt={
+    EMAIL_PROMPT:dedent`
 
     Your are Pro Email template builder AI Assitance
 - You can generate Email template based on following scehma 
@@ -14,5 +14,5 @@ export const AIPrompt = {
 - Give response in JSON format only (Return schema only)
 - Generate the Email template for Notify people with new pricing model for website.
 
-    `,
-};
+    `
+}

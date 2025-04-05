@@ -4,46 +4,39 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { AIPrompt } from "@/Data/Prompt";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { v4 as uuidv4 } from "uuid";
-import { useUserDetail } from "@/app/provider";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 function AIInputBox() {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const SaveTemplate = useMutation(api.emailTemplate.SaveTemplate);
-  const { userDetail, setUserDetail } = useUserDetail();
   const router = useRouter();
 
   const OnGenerate = async () => {
-    const PROMPT = AIPrompt.EMAIL_PROMPT + "\n-" + userInput;
-    const tid = uuidv4();
+    if (!userInput.trim()) return; // Prevent empty submissions
+
+    const PROMPT = `${AIPrompt.EMAIL_PROMPT}\n- ${userInput}`; // Combine the prompt with user input
+    const templateId = uuidv4(); // Generate a new UUID for the template
     setLoading(true);
-    if (!userDetail?.email) {
-      console.log("Error: Email is missing from user details.");
-      setLoading(false);
-      return;
-    }
 
     try {
+      // Call your AI model API to generate the email content
       const result = await axios.post("/api/ai-email-generate", {
         prompt: PROMPT,
       });
-      console.log(result.data);
-      const resp = await SaveTemplate({
-        tid: tid,
-        design: result.data,
-        email: userDetail.email,
-        description: userInput,
-      });
-      console.log(resp);
-      router.push("/editor/" + tid);
-      setLoading(false);
+      const aiContent = result.data; // Assume it returns the generated content
+
+      console.log(aiContent); // Log the AI response for debugging
+
+      // Redirect to the editor page with the generated content as a query parameter
+      const query = new URLSearchParams({
+        content: JSON.stringify(aiContent),
+      }).toString();
+      router.push(`/editor/${templateId}?${query}`);
     } catch (e) {
-      console.log(e);
+      console.error("Error generating email:", e);
+    } finally {
       setLoading(false);
     }
   };
@@ -54,19 +47,20 @@ function AIInputBox() {
         Provide details about the email template you'd like to create
       </p>
       <Textarea
-        className="text-xl"
+        className="text-xl min-h-[180px] resize-y w-full p-3 border rounded-lg"
         placeholder="Start Writing Here..."
-        rows={5}
+        rows={3}
+        value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
       />
       <Button
         className="w-full mt-7"
-        disabled={userInput?.length == 0 || loading}
-        onClick={OnGenerate}>
-        {" "}
+        disabled={userInput.trim().length === 0 || loading}
+        onClick={OnGenerate}
+      >
         {loading ? (
           <span className="flex gap-2">
-            <Loader2 className="animate-spin" /> Please Wait...{" "}
+            <Loader2 className="animate-spin" /> Please Wait...
           </span>
         ) : (
           "GENERATE"

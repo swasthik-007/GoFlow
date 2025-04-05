@@ -7,7 +7,7 @@ dotenv.config();
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN!;
-// const USER_EMAIL = process.env.GMAIL_USER!;
+const USER_EMAIL = process.env.GMAIL_USER!;
 const REDIRECT_URI = process.env.REDIRECT_URI!;
 
 // Set up OAuth2 client
@@ -21,12 +21,9 @@ oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 export async function POST(req: Request) {
   try {
     const { recipient, subject, viewHTMLCode } = await req.json();
-
+    
     if (!recipient || !subject || !viewHTMLCode) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Get dynamic access token
@@ -60,15 +57,9 @@ export async function POST(req: Request) {
       requestBody: { raw: encodedMessage },
     });
 
-    return NextResponse.json(
-      { message: "✅ Email Sent!", data: res.data },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: "✅ Email Sent!", data: res.data }, { status: 200 });
   } catch (error) {
     console.error("Error sending email:", error);
-    return NextResponse.json(
-      { error: "Failed to send email." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to send email." }, { status: 500 });
   }
 }

@@ -69,7 +69,8 @@ const Canvas = forwardRef(
           } ${dragOver ? "bg-purple-100 p-8" : ""}`}
           onDragOver={onDragOver}
           onDrop={onDropHandle}
-          ref={htmlRef}>
+          ref={htmlRef}
+        >
           {Array.isArray(emailTemplate) && emailTemplate.length > 0 ? (
             emailTemplate.map((layout, index) => (
               <div key={index}>{getLayoutComponent(layout)}</div>

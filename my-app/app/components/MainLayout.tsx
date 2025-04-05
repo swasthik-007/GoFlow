@@ -6,8 +6,9 @@ import { useUser } from "@clerk/nextjs";
 import { ThemeProvider } from "./theme-provider";
 import { AppSidebar } from "./app-sidebar";
 import Header from "./Header"; // Import the Header component
-import { ComposeProvider } from "../context/ComposeContext";
+// import { ComposeProvider } from "../context/ComposeContext";
 import Sidebar from "@/components/sidebars";
+import { ComposeProvider } from "@/context/ComposeContext";
 
 export default function MainLayout({
   children,
