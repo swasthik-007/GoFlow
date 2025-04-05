@@ -17,7 +17,7 @@ function Hero() {
       </p>
       <div className="flex gap-5 mt-6">
         <Button variant="outline">Try Demo get</Button>
-        <SignInButton />
+        {/* <SignInButton /> */}
       </div>
 
       <Image

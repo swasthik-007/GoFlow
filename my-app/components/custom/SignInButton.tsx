@@ -19,26 +19,26 @@ function SignInButton() {
 
       const user = userInfo.data;
 
-      const result = await CreateUser({
-        name: user?.name,
-        email: user?.email,
-        picture: user?.picture,
-      });
+      // const result = await CreateUser({
+      //   name: user?.name,
+      //   email: user?.email,
+      //   picture: user?.picture,
+      // });
 
-      const userDetail = {
-        ...user,
-        _id: result?.id ?? result,
-      };
+      // const userDetail = {
+      //   ...user,
+      //   _id: result?.id ?? result,
+      // };
 
       if (typeof window !== undefined) {
-        localStorage.setItem("userDetail", JSON.stringify(userDetail));
+        localStorage.setItem("userDetail", JSON.stringify(user));
       }
     },
     onError: (errorResponse) => console.log(errorResponse),
   });
   return (
     <div>
-      <Button onClick={googleLogin}>Get Started</Button>
+      <Button onClick={() => googleLogin()}>Get Started</Button>
     </div>
   );
 }
