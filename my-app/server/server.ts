@@ -95,7 +95,7 @@ async function refreshAccessToken() {
     if (!oauthTokens?.refresh_token) {
       throw new Error("No refresh token available. Please re-authenticate.");
     }
-    console.log("🔄 Refreshing access token...");
+    console.log("Refreshing access token...");
 
     oauth2Client.setCredentials(oauthTokens);
     const { credentials } = await oauth2Client.refreshAccessToken();
@@ -162,7 +162,7 @@ app.get("/emails", async (req, res) => {
             from: parsedEmail.from?.text || "Unknown",
             to: parsedEmail.to?.text || "Unknown",
             subject: parsedEmail.subject || "No Subject",
-            labels: emailLabels, // ✅ Show labels
+            labels: emailLabels, //Show labels
             body: parsedEmail.html || parsedEmail.textAsHtml || "No Content",
           };
         } catch (emailError) {
@@ -234,17 +234,17 @@ app.get("/emails/:id", async (req, res) => {
 
 app.delete("/emails/:id", async (req, res) => {
   try {
-    console.log("🔴 Deleting email...");
+    console.log("Deleting email...");
 
     await ensureValidToken();
-    console.log("✅ Token is valid, proceeding with deletion...");
+    console.log("Token is valid, proceeding with deletion...");
 
     const { id } = req.params;
     if (!id) {
-      return res.status(400).json({ error: "❌ Email ID is required" });
+      return res.status(400).json({ error: "Email ID is required" });
     }
 
-    console.log(`🗑️ Attempting to delete email with ID: ${id}`);
+    console.log(`Attempting to delete email with ID: ${id}`);
 
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
@@ -254,11 +254,11 @@ app.delete("/emails/:id", async (req, res) => {
       id,
     });
 
-    console.log(`✅ Email with ID ${id} deleted successfully!`);
+    console.log(`Email with ID ${id} deleted successfully!`);
 
-    res.json({ message: "✅ Email deleted successfully!" });
+    res.json({ message: "Email deleted successfully!" });
   } catch (error) {
-    console.error("❌ Error deleting email:", error);
+    console.error("Error deleting email:", error);
 
     // More specific error responses
     if (error.message.includes("Unauthorized")) {
@@ -271,7 +271,7 @@ app.delete("/emails/:id", async (req, res) => {
     }
 
     res.status(500).json({
-      error: "❌ Failed to delete email",
+      error: "Failed to delete email",
       details: error.message,
     });
   }
@@ -295,7 +295,7 @@ app.post("/send-email", async (req, res) => {
         requestBody: { raw: encodedMessage },
       });
   
-      res.json({ message: "✅ Email Sent Successfully!" });
+      res.json({ message: "Email Sent Successfully!" });
     } catch (error) {
       console.error("Error sending email:", error);
       res.status(500).json({ error: "Failed to send email" });
@@ -304,5 +304,5 @@ app.post("/send-email", async (req, res) => {
 
 const port = process.env.PORT;
 app.listen(port, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${port}`);
 });
