@@ -2,7 +2,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Provider from "./provider";
 import "./globals.css";
 import { ComposeProvider } from "@/context/ComposeContext";
-import MainLayout from "@/components/MainLayout";
+import MainLayout from "./components/MainLayout";
+// import MainLayout from "@/components/MainLayout";
 // import MainLayout from "./components/MainLayout";
 // import { ComposeProvider } from "./context/ComposeContext";
 
