@@ -277,32 +277,32 @@ app.delete("/emails/:id", async (req, res) => {
   }
 });
 app.post("/send-email", async (req, res) => {
-    try {
-      await ensureValidToken();
-      const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-      const { to, subject, body } = req.body;
-  
-      const rawEmail = [`To: ${to}`, `Subject: ${subject}`, "", body].join("\n");
-  
-      const encodedMessage = Buffer.from(rawEmail)
-        .toString("base64")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
-  
-      await gmail.users.messages.send({
-        userId: "me",
-        requestBody: { raw: encodedMessage },
-      });
-  
-      res.json({ message: "✅ Email Sent Successfully!" });
-    } catch (error) {
-      console.error("Error sending email:", error);
-      res.status(500).json({ error: "Failed to send email" });
-    }
-  });
+  try {
+    await ensureValidToken();
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+    const { to, subject, body } = req.body;
+
+    const rawEmail = [`To: ${to}`, `Subject: ${subject}`, "", body].join("\n");
+
+    const encodedMessage = Buffer.from(rawEmail)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
+    await gmail.users.messages.send({
+      userId: "me",
+      requestBody: { raw: encodedMessage },
+    });
+
+    res.json({ message: "✅ Email Sent Successfully!" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
 
 const port = process.env.PORT;
 app.listen(port, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${port}`);
 });
