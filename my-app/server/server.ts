@@ -40,19 +40,6 @@ app.get("/auth-url", (req, res) => {
   });
   res.json({ url });
 });
-// app.get("/auth-url", (req, res) => {
-//   const url = oauth2Client.generateAuthUrl({
-//     access_type: "offline",
-//     prompt: "consent",
-//     scopes: [
-//       "https://www.googleapis.com/auth/gmail.readonly",
-//       "https://www.googleapis.com/auth/gmail.send",
-//       "https://www.googleapis.com/auth/gmail.modify",
-//       "https://www.googleapis.com",
-//     ],
-//   });
-//   res.json({ url });
-// });
 
 const TOKEN_PATH = "tokens.json";
 
@@ -191,7 +178,7 @@ app.get("/emails", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch emails" });
   }
 });
-const PORT = 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
