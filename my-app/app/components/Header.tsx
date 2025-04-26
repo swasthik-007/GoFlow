@@ -35,7 +35,7 @@ const options = [
 ];
 
 export default function Header() {
-  const {  user } = useUser();
+  const { user } = useUser();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
@@ -64,7 +64,6 @@ export default function Header() {
     setIsLoading,
     token,
     setToken,
- 
   } = useCompose();
 
   const fetchEmailsCallback = () => fetchEmails;
@@ -151,70 +150,70 @@ export default function Header() {
       className="sticky top-0 z-10 flex items-center w-full py-4 px-6 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm"
     >
       <div className="flex w-full items-center justify-between">
-        {token && (
-          <>
-            <div className="h-10 w-40 object-contain">
-              <img src="/flow.png" alt="goflow" className="h-full w-auto" />
-            </div>
-            <div className="flex items-center space-x-5">
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-48 h-10 justify-between bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white border-0 shadow-md transition-all duration-300 font-medium"
-                  >
-                    {value
-                      ? options.find((option) => option.value === value)?.label
-                      : "Email Actions"}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-80" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48 p-0 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md overflow-hidden">
-                  <Command className="border-0">
-                    <CommandInput
-                      placeholder="Search actions..."
-                      className="h-9"
-                    />
-                    <CommandList>
-                      <CommandEmpty>No action found.</CommandEmpty>
-                      <CommandGroup>
-                        {options.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              console.log("Selected:", currentValue);
-                              handleActionSelect(currentValue);
-                            }}
-                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                value === option.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <div className="flex items-center space-x-4">
-                <ModeToggle />
-                <div className="scale-110">
-                  <UserButton afterSignOutUrl="/" />
-                </div>
+        {/* {token && ( */}
+        <>
+          <div className="h-10 w-40 object-contain">
+            <img src="/flow.png" alt="goflow" className="h-full w-auto" />
+          </div>
+          <div className="flex items-center space-x-5">
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-48 h-10 justify-between bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white border-0 shadow-md transition-all duration-300 font-medium"
+                >
+                  {value
+                    ? options.find((option) => option.value === value)?.label
+                    : "Email Actions"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-80" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 p-0 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md overflow-hidden">
+                <Command className="border-0">
+                  <CommandInput
+                    placeholder="Search actions..."
+                    className="h-9"
+                  />
+                  <CommandList>
+                    <CommandEmpty>No action found.</CommandEmpty>
+                    <CommandGroup>
+                      {options.map((option) => (
+                        <CommandItem
+                          key={option.value}
+                          value={option.value}
+                          onSelect={(currentValue) => {
+                            console.log("Selected:", currentValue);
+                            handleActionSelect(currentValue);
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === option.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <div className="flex items-center space-x-4">
+              <ModeToggle />
+              <div className="scale-110">
+                <UserButton afterSignOutUrl="/" />
               </div>
             </div>
-          </>
-        )}
+          </div>
+        </>
+        {/* )} */}
       </div>
 
       {/* Quick Compose Modal */}

@@ -62,13 +62,14 @@ export default function CategoryPage() {
   }, []);
 
   const fetchEmails = useCallback(async () => {
-    if (!token || !category) {
+    if (!category) {
       console.log("No token or category provided. Cannot fetch emails.");
       return;
     }
 
     setIsLoading(true);
     try {
+      console.log("fetching");
       const response = await axios.get(
         `http://localhost:5000/emails?label=${category}`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -79,7 +80,12 @@ export default function CategoryPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, category]);
+  }, [token, category]); // Added token as a dependency
+
+  // Fetch emails when token or category changess
+  useEffect(() => {
+    fetchEmails();
+  }, [fetchEmails]);
 
   // const fetchEmails = useCallback(async () => {
   //   if (!category) return;
@@ -216,7 +222,6 @@ export default function CategoryPage() {
           <div className="h-[10%]">
             <Header />
           </div>
-
           <div className="h-[90%] flex w-[95%] m-auto">
             <div className="overflow-y-auto h-screen max-h-[calc(100vh-10%)] w-2/3 p-6 bg-gray-900 rounded-lg shadow-md transition-all duration-300">
               {!isSignedIn ? (
@@ -225,26 +230,19 @@ export default function CategoryPage() {
                 </div>
               ) : (
                 <>
-                  {token && (
-                    <button
-                      onClick={fetchEmails}
-                      disabled={isLoading}
-                      className={`bg-gradient-to-br from-green-400 to-blue-600 text-white px-4 py-2 rounded w-full mb-4 transition ${
-                        isComposeOpen || isQuickComposeOpen ? "opacity-30" : ""
-                      } disabled:opacity-50`}
-                    >
-                      {isLoading ? "Fetching..." : "📩 Refresh Emails"}
-                    </button>
-                  )}
+                  <button
+                    onClick={fetchEmails}
+                    disabled={isLoading}
+                    className={`bg-gradient-to-br from-green-400 to-blue-600 text-white px-4 py-2 rounded w-full mb-4 transition ${
+                      isComposeOpen || isQuickComposeOpen ? "opacity-30" : ""
+                    } disabled:opacity-50`}
+                  >
+                    {isLoading ? "Fetching..." : "📩 Refresh Emails"}
+                  </button>
+
                   <div className="space-y-4">
                     {emails.length === 0 ? (
-                      token ? (
-                        <p className="text-center text-gray-500">loading...</p>
-                      ) : (
-                        <p className="text-center text-gray-500">
-                          Connect your Gmail account to view emails.
-                        </p>
-                      )
+                      <p className="text-center text-gray-500">loading...</p>
                     ) : (
                       emails.map((email, idx) => {
                         const senderName = decodeHeader(email.from)
@@ -278,8 +276,7 @@ export default function CategoryPage() {
                                 handledelete(
                                   email?.id,
                                   setEmails,
-                                  setIsLoading,
-                                  token
+                                  setIsLoading
                                 );
                               }}
                               className="opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 ml-4"
@@ -386,16 +383,16 @@ export default function CategoryPage() {
 
                 {/* Footer with actions */}
                 {/* <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
-                  <button
-                    onClick={closeFullContentModal}
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    Close
-                  </button>
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                    Reply
-                  </button>
-                </div> */}
+        <button
+          onClick={closeFullContentModal}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        >
+          Close
+        </button>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          Reply
+        </button>
+      </div> */}
               </div>
             )}
           </div>

@@ -204,26 +204,20 @@ export default function CategoryPage() {
                 </div>
               ) : (
                 <>
-                  {token && (
-                    <button
-                      onClick={fetchEmails}
-                      disabled={isLoading}
-                      className={`bg-gradient-to-br from-green-400 to-blue-600 text-white px-4 py-2 rounded w-full mb-4 transition ${
-                        isComposeOpen || isQuickComposeOpen ? "opacity-30" : ""
-                      } disabled:opacity-50`}
-                    >
-                      {isLoading ? "Fetching..." : "📩 Refresh Emails"}
-                    </button>
-                  )}
+                  {/* {token && ( */}
+                  <button
+                    onClick={fetchEmails}
+                    disabled={isLoading}
+                    className={`bg-gradient-to-br from-green-400 to-blue-600 text-white px-4 py-2 rounded w-full mb-4 transition ${
+                      isComposeOpen || isQuickComposeOpen ? "opacity-30" : ""
+                    } disabled:opacity-50`}
+                  >
+                    {isLoading ? "Fetching..." : "📩 Refresh Emails"}
+                  </button>
+                  {/* )} */}
                   <div className="space-y-4">
                     {emails.length === 0 ? (
-                      token ? (
-                        <p className="text-center text-gray-500">loading...</p>
-                      ) : (
-                        <p className="text-center text-gray-500">
-                          Connect your Gmail account to view emails.
-                        </p>
-                      )
+                      <p className="text-center text-gray-500">Loading...</p>
                     ) : (
                       emails.map((email, idx) => {
                         const senderName = decodeHeader(email.from)
@@ -244,8 +238,6 @@ export default function CategoryPage() {
                               <p className="text-gray-500 text-sm">
                                 {email.date}
                               </p>
-
-                              {/* Now using the getTextPreview function for plain text */}
                               <p className="text-gray-600 mt-2">
                                 {getTextPreview(email)}...
                               </p>
