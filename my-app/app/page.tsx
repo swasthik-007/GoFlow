@@ -10,5 +10,5 @@ export default async function HomePage() {
   if (userId) {
     redirect(process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL!);
   }
-  return <LandingPage />;
+  return <LandingPage />
 }

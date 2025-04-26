@@ -1,16 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true, // Enables React's Strict Mode for development
+  reactStrictMode: true,
   experimental: {
-    esmExternals: true, // Ensure that Next.js can handle ECMAScript Modules properly
-    // turbo:false,
+    esmExternals: true,
   },
   images: {
-    domains: ["lh3.googleusercontent.com"], // Configure image domains if necessary
+    domains: ["lh3.googleusercontent.com"],
   },
-  webpack(config) {
-    // Custom webpack configuration can go here
+  webpack(config, { isServer }) {
+    // Add this to prevent issues with fs module on client side
+    if (!isServer) {
+      config.resolve.fallback = {
+        fs: false,
+        path: false,
+        os: false, // Optionally add more Node.js modules if needed
+      };
+    }
+
     return config;
   },
   async redirects() {

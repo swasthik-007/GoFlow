@@ -13,6 +13,12 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 // import { useCompose } from "@/app/context/ComposeContext";
 import { handledelete } from "@/app/helper/index";
 import { useCompose } from "@/context/ComposeContext";
+import { getEmbedding } from "@/server/utils/embed";
+import { getPineconeIndex } from "@/server/utils/pincecone";
+import { fetchEmailsFromPinecone } from "@/app/actions/fetchEmails";
+// import
+// import { getQueryEmbedding } from "@/utils/getQueryEmbedding";
+//   import { index } from "@/utils/pineconeClient";
 
 export default function CategoryPage() {
   const { category } = useParams(); // Get category from URL
@@ -56,7 +62,10 @@ export default function CategoryPage() {
   }, []);
 
   const fetchEmails = useCallback(async () => {
-    if (!token || !category) return;
+    if (!token || !category) {
+      console.log("No token or category provided. Cannot fetch emails.");
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -72,9 +81,25 @@ export default function CategoryPage() {
     }
   }, [token, category]);
 
-  useEffect(() => {
-    fetchEmails();
-  }, [fetchEmails]);
+  // const fetchEmails = useCallback(async () => {
+  //   if (!category) return;
+
+  //   setIsLoading(true);
+  //   try {
+  //     const emails = await fetchEmailsFromPinecone(category); // ✅ Now this is safe
+  //     setEmails(emails);
+
+  //   console.log("Fetched emails:", emails); // Debugging line
+  //   } catch (error) {
+  //     console.error("Error fetching from Pinecone:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [category]);
+
+  // useEffect(() => {
+  //   fetchEmails();
+  // }, [fetchEmails]);
 
   const formatEmailBody = (rawHtml) => {
     if (!rawHtml) return "<p>No Content</p>";
