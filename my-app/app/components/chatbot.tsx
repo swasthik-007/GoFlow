@@ -43,7 +43,7 @@ const ChatBot = () => {
     if (!recipient.trim()) return;
     setIsLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/emails");
+      const res = await axios.get("https://goflow-6.onrender.com/emails");
       const recipientLower = recipient.trim().toLowerCase();
       const filteredEmails = res.data.filter(
         (email) =>
@@ -195,7 +195,7 @@ const ChatBot = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/send-email", {
+      const response = await fetch("https://goflow-6.onrender.com/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(emailPayload),

@@ -343,7 +343,7 @@ function EditorHeader({ viewHTMLCode }: { viewHTMLCode: () => void }) {
 
       console.log("Email data prepared:", emailData);
 
-      const response = await fetch("http://localhost:5000/send-email-html", {
+      const response = await fetch("https://goflow-6.onrender.com/send-email-html", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(emailData),

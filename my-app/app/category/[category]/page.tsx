@@ -71,7 +71,7 @@ export default function CategoryPage() {
     try {
       console.log("fetching");
       const response = await axios.get(
-        `http://localhost:5000/emails?label=${category}`,
+        `https://goflow-6.onrender.com/emails?label=${category}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setEmails(response.data);

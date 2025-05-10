@@ -76,7 +76,7 @@ export default function OAuthRedirect() {
       }
 
       try {
-        const { data } = await axios.get("http://localhost:5000/auth-url", {
+        const { data } = await axios.get("https://goflow-6.onrender.com/auth-url", {
           params: { userId }, // Send user ID if needed
         });
 
