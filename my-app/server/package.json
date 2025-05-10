@@ -5,22 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "start": "node server.js"
+    "start": "tsx server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@pinecone-database/pinecone": "^5.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "googleapis": "^148.0.0",
-    "mailparser": "^3.7.2",
-    "node-cron": "^3.0.3",
-    "nodemailer": "^6.10.0"
-  },
+  "@pinecone-database/pinecone": "^5.1.1",
+  "axios": "^1.6.7",                   
+  "cors": "^2.8.5",
+  "dotenv": "^16.4.7",
+  "express": "^4.21.2",
+  "googleapis": "^148.0.0",
+  "mailparser": "^3.7.2",
+  "node-cron": "^3.0.3",
+  "nodemailer": "^6.10.0"
+}
+,
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
