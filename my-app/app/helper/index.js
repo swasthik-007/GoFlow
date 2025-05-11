@@ -14,9 +14,12 @@ export const handledelete = async (id, setEmails, setIsLoading, token) => {
   setIsLoading(true);
 
   try {
-    const response = await axios.delete(`https://goflow-6.onrender.com/emails/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.delete(
+      `https://goflow-8.onrender.com/emails/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
     if (response.status === 200) {
       setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
@@ -40,7 +43,7 @@ export const fetchEmails = async (setEmails, setIsLoading, authToken) => {
 
   try {
     setIsLoading(true);
-    const response = await axios.get("https://goflow-6.onrender.com/emails", {
+    const response = await axios.get("https://goflow-8.onrender.com/emails", {
       headers: { Authorization: `Bearer ${authToken}` },
     });
 
@@ -230,7 +233,7 @@ export const handleSendEmail = async (
 
   try {
     setIsLoading(true);
-    await axios.post("https://goflow-6.onrender.com/send-email", {
+    await axios.post("https://goflow-8.onrender.com/send-email", {
       to,
       subject,
       body,

@@ -76,9 +76,12 @@ export default function OAuthRedirect() {
       }
 
       try {
-        const { data } = await axios.get("https://goflow-6.onrender.com/auth-url", {
-          params: { userId }, // Send user ID if needed
-        });
+        const { data } = await axios.get(
+          "https://goflow-8.onrender.com/auth-url",
+          {
+            params: { userId }, // Send user ID if needed
+          }
+        );
 
         window.location.href = data.url; // Redirect to Gmail OAuth
       } catch (error) {

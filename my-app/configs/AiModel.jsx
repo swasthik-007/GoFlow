@@ -125,7 +125,7 @@ export const GenerateLayout_AI = model.startChat({
 export const QueryEmails_AI = async (query, recipient) => {
   try {
     // Fetch emails from backend
-    const EMAIL_DB_URL = "https://goflow-6.onrender.com/emails";
+    const EMAIL_DB_URL = "https://goflow-8.onrender.com/emails";
     const response = await fetch(EMAIL_DB_URL);
     const emails = await response.json();
 
