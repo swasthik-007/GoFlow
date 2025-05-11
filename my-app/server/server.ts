@@ -107,7 +107,7 @@
 // export const oauth2Client = new google.auth.OAuth2(
 //   CLIENT_ID,
 //   CLIENT_SECRET,
-//   "https://goflow-9.onrender.com/oauth-callback"
+//   "https://goflow-9-jof0.onrender.com/oauth-callback"
 // );
 
 // app.post("/send-email-html", async (req, res) => {
@@ -477,7 +477,7 @@
 // const oauth2Client = new google.auth.OAuth2(
 //   process.env.GOOGLE_CLIENT_ID!,
 //   process.env.GOOGLE_CLIENT_SECRET!,
-//   "https://goflow-9.onrender.com/oauth-callback"
+//   "https://goflow-9-jof0.onrender.com/oauth-callback"
 // );
 
 // // Save tokens in Supabase
@@ -692,7 +692,8 @@ const supabase = createClient(
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  process.env.REDIRECT_URI || "https://goflow-9.onrender.com/oauth-callback"
+  process.env.REDIRECT_URI ||
+    "https://goflow-9-jof0.onrender.com/oauth-callback"
 );
 
 // Save tokens to Supabase

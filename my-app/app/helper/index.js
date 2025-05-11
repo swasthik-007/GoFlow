@@ -20,7 +20,7 @@ import DOMPurify from "dompurify";
 //   try {
 //     setIsLoading(true);
 //     const response = await axios.delete(
-//       `https://goflow-9.onrender.com/emails/${id}`,
+//       `https://goflow-9-jof0.onrender.com/emails/${id}`,
 //       {
 //         headers: {
 //           Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
@@ -62,7 +62,7 @@ export const handleDeleteEmail = async (
     if (setIsLoading) setIsLoading(true);
 
     const res = await axios.delete(
-      `https://goflow-9.onrender.com/emails/${emailId}`,
+      `https://goflow-9-jof0.onrender.com/emails/${emailId}`,
       {
         headers: {
           Authorization: `Bearer ${gmailId}`,
@@ -89,11 +89,14 @@ export const fetchEmails = async (setEmails, setIsLoading, user) => {
 
   try {
     setIsLoading(true);
-    const response = await axios.get("https://goflow-9.onrender.com/emails", {
-      headers: {
-        Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
-      },
-    });
+    const response = await axios.get(
+      "https://goflow-9-jof0.onrender.com/emails",
+      {
+        headers: {
+          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
+        },
+      }
+    );
 
     setEmails(response.data);
   } catch (error) {
@@ -284,7 +287,7 @@ export const handleSendEmail = async (
   try {
     setIsLoading(true);
     await axios.post(
-      "https://goflow-9.onrender.com/send-email",
+      "https://goflow-9-jof0.onrender.com/send-email",
       { to, subject, body },
       {
         headers: {

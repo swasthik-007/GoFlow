@@ -47,7 +47,7 @@ const ChatBot = () => {
     if (!recipient.trim()) return;
     setIsLoading(true);
     try {
-      const res = await axios.get("https://goflow-9.onrender.com/emails", {
+      const res = await axios.get("https://goflow-9-jof0.onrender.com/emails", {
         headers: {
           Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
         },
@@ -215,14 +215,17 @@ const ChatBot = () => {
     try {
       if (!gmailId) throw new Error("Gmail ID not available");
 
-      const response = await fetch("https://goflow-9.onrender.com/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${gmailId}`,
-        },
-        body: JSON.stringify(emailPayload),
-      });
+      const response = await fetch(
+        "https://goflow-9-jof0.onrender.com/send-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${gmailId}`,
+          },
+          body: JSON.stringify(emailPayload),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
