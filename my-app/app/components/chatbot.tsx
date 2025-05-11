@@ -195,11 +195,15 @@ const ChatBot = () => {
     };
 
     try {
-      const response = await fetch("https://goflow-8.onrender.com/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(emailPayload),
-      });
+     const response = await fetch("https://goflow-8.onrender.com/send-email", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${user.emailAddress}`, // ✅ pass Gmail user ID
+  },
+  body: JSON.stringify(emailPayload),
+});
+
 
       if (!response.ok) {
         console.error("Error sending email:", await response.text());
