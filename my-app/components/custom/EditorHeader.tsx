@@ -304,7 +304,28 @@ import { useParams } from "next/navigation";
 // import { useCompose } from "@/app/context/ComposeContext";
 import DOMPurify from "dompurify";
 import { useCompose } from "@/context/ComposeContext";
-
+const {
+  isComposeOpen,
+  setIsComposeOpen,
+  composeWithAi,
+  isQuickComposeOpen,
+  setIsQuickComposeOpen,
+  setComposeWithAi,
+  setIsLoading,
+  isLoading,
+  setEmails,
+  setToken,
+  token,
+  emails,
+  setTo,
+  setSubject,
+  setBody,
+  setRecipientType,
+  setTone,
+  setPurpose,
+  setExpandedEmail,
+  expandedEmail,
+} = useCompose();
 function EditorHeader({ viewHTMLCode }: { viewHTMLCode: () => void }) {
   const { screenSize, setScreenSize } = useScreenSize();
   const {
@@ -350,7 +371,6 @@ function EditorHeader({ viewHTMLCode }: { viewHTMLCode: () => void }) {
           headers: {
             Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
             "Content-Type": "application/json",
-            
           },
           body: JSON.stringify(emailData),
         }
@@ -418,7 +438,23 @@ function EditorHeader({ viewHTMLCode }: { viewHTMLCode: () => void }) {
           <Code />
         </Button>
 
-        <Button onClick={handleSendEmail} variant="outline">
+        <Button
+          onClick={(e) =>
+            handleSendEmail(
+              e,
+              to,
+              subject,
+              body,
+              setTo,
+              setSubject,
+              setBody,
+              setIsLoading,
+              setIsComposeOpen,
+              user // ✅ pass user here
+            )
+          }
+          variant="outline"
+        >
           Send Test Email
         </Button>
       </div>

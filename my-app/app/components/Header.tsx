@@ -380,7 +380,8 @@ export default function Header() {
                   setSubject,
                   setBody,
                   setIsLoading,
-                  setIsComposeOpen
+                  setIsComposeOpen,
+                  user // <== pass user here
                 )
               }
               className="space-y-5"

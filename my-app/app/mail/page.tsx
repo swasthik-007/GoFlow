@@ -252,11 +252,7 @@ export default function CategoryPage() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handledelete(
-                                  email?.id,
-                                  setEmails,
-                                  setIsLoading,
-                                  token,
-                                  user
+                                  email?.id, setEmails, setIsLoading, user
                                 );
                               }}
                               className="opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 ml-4"

@@ -5,25 +5,65 @@ import DOMPurify from "dompurify";
 // const { user } = useUser();
 // const gmailId = user?.primaryEmailAddress?.emailAddress;
 // import { GenerateLayout_AI }
-export const handledelete = async (id, setEmails, setIsLoading, user) => {
-  const gmailId = user?.primaryEmailAddress?.emailAddress;
-  if (!gmailId) {
-    alert("User email not found.");
-    return;
-  }
+// export const handledelete = async (id, setEmails, setIsLoading, user) => {
+//   const gmailId = user?.primaryEmailAddress?.emailAddress;
+//   if (!gmailId) {
+//     alert("User email not found.");
+//     return;
+//   }
 
+//   if (!id) {
+//     alert("Invalid email ID!");
+//     return;
+//   }
+
+//   try {
+//     setIsLoading(true);
+//     const response = await axios.delete(
+//       `https://goflow-8.onrender.com/emails/${id}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
+//         },
+//       }
+//     );
+
+//     if (response.status === 200) {
+//       setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
+//       alert("✅ Email deleted successfully!");
+//     } else {
+//       throw new Error("Server returned non-200 status");
+//     }
+//   } catch (error) {
+//     console.error("❌ Error deleting email:", error);
+//     alert(`Failed to delete email: ${error.message}`);
+//   } finally {
+//     setIsLoading(false);
+//   }
+// };
+
+export const handledelete = async (id, setEmails, setIsLoading, user) => {
   if (!id) {
+    console.error("❌ Error: Email ID is undefined!");
     alert("Invalid email ID!");
     return;
   }
 
+  const gmailId = user?.primaryEmailAddress?.emailAddress;
+  if (!gmailId) {
+    alert("User email not found. Please sign in again.");
+    return;
+  }
+
+  console.log("🗑️ Attempting to delete email with ID:", id);
+  setIsLoading(true);
+
   try {
-    setIsLoading(true);
     const response = await axios.delete(
       `https://goflow-8.onrender.com/emails/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
+          Authorization: `Bearer ${gmailId}`, // 🔐 this is critical
         },
       }
     );
@@ -41,6 +81,7 @@ export const handledelete = async (id, setEmails, setIsLoading, user) => {
     setIsLoading(false);
   }
 };
+
 
 export const fetchEmails = async (setEmails, setIsLoading, user) => {
   const gmailId = user?.primaryEmailAddress?.emailAddress;
