@@ -455,32 +455,247 @@
 
 // server.ts
 // server.ts
+// import express from "express";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import { google } from "googleapis";
+// import { createClient } from "@supabase/supabase-js";
+
+// // Init
+// dotenv.config();
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+
+// // Supabase client
+// const supabase = createClient(
+//   "https://btcksyamxntsccpafbzd.supabase.co",
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0Y2tzeWFteG50c2NjcGFmYnpkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjkzOTUxMCwiZXhwIjoyMDYyNTE1NTEwfQ.wG5G5De-gtGLMOClbHP1VxEdyOnIH8BBIBwmxm_a1AE"
+// );
+
+// // Google OAuth2
+// const oauth2Client = new google.auth.OAuth2(
+//   process.env.GOOGLE_CLIENT_ID!,
+//   process.env.GOOGLE_CLIENT_SECRET!,
+//   "https://goflow-8.onrender.com/oauth-callback"
+// );
+
+// // Save tokens in Supabase
+// async function saveTokensToSupabase(userId: string, tokens: any) {
+//   const { error } = await supabase.from("gmail_tokens").upsert({
+//     user_id: userId,
+//     access_token: tokens.access_token,
+//     refresh_token: tokens.refresh_token,
+//     scope: tokens.scope,
+//     token_type: tokens.token_type,
+//     expiry_date: tokens.expiry_date || Date.now() + 3600 * 1000,
+//   });
+//   if (error) console.error("❌ Token save error:", error);
+//   else console.log("✅ Token saved for:", userId);
+// }
+
+// // Load tokens from Supabase
+// async function loadTokensFromSupabase(userId: string) {
+//   const { data, error } = await supabase
+//     .from("gmail_tokens")
+//     .select("access_token, refresh_token, scope, token_type, expiry_date")
+//     .eq("user_id", userId)
+//     .maybeSingle();
+
+//   if (error || !data) {
+//     console.error("❌ Token load error:", error || "Token not found");
+//     return null;
+//   }
+//   return data;
+// }
+
+// // Ensure token is valid
+// async function ensureValidToken(userId: string) {
+//   const tokens = await loadTokensFromSupabase(userId);
+//   if (!tokens) throw new Error("Unauthorized: No token found");
+
+//   oauth2Client.setCredentials(tokens);
+//   if (!tokens.expiry_date || tokens.expiry_date < Date.now()) {
+//     const { credentials } = await oauth2Client.refreshAccessToken();
+//     await saveTokensToSupabase(userId, credentials);
+//     oauth2Client.setCredentials(credentials);
+//   }
+// }
+
+// // Auth URL endpoint
+// app.get("/auth-url", (req, res) => {
+//   const url = oauth2Client.generateAuthUrl({
+//     access_type: "offline",
+//     prompt: "consent",
+//     scope: [
+//       "https://www.googleapis.com/auth/gmail.readonly",
+//       "https://www.googleapis.com/auth/gmail.send",
+//       "https://www.googleapis.com/auth/gmail.modify",
+//       "https://mail.google.com/",
+//       "https://www.googleapis.com/auth/userinfo.email",
+//       "https://www.googleapis.com/auth/userinfo.profile",
+//     ],
+//   });
+//   res.json({ url });
+// });
+
+// // OAuth callback endpoint
+// app.get("/oauth-callback", async (req, res) => {
+//   try {
+//     const { code } = req.query;
+//     const { tokens } = await oauth2Client.getToken(code as string);
+//     oauth2Client.setCredentials(tokens);
+
+//     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+//     const profile = await gmail.users.getProfile({ userId: "me" });
+//     const email = profile.data.emailAddress!;
+
+//     await saveTokensToSupabase(email, tokens);
+//     res.redirect("https://go-flow-mu.vercel.app/category/sent?token=${email} || \"\"");
+//   } catch (error) {
+//     console.error("OAuth Callback Error:", error);
+//     res.status(500).send("Authentication failed");
+//   }
+// });
+
+// // Fetch emails
+// app.get("/emails", async (req, res) => {
+//   try {
+//     const userId = req.headers.authorization?.split(" ")[1];
+//     if (!userId) throw new Error("Missing user token");
+
+//     await ensureValidToken(userId);
+//     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+//     const label = req.query.label as string;
+
+//     const response = await gmail.users.messages.list({
+//       userId: "me",
+//       maxResults: 10,
+//       q: label ? `label:${label}` : "in:anywhere",
+//     });
+
+//     const messages = response.data.messages || [];
+//     const emails = await Promise.all(
+//       messages.map(async (msg) => {
+//         const email = await gmail.users.messages.get({
+//           userId: "me",
+//           id: msg.id!,
+//           format: "raw",
+//         });
+//         return email.data;
+//       })
+//     );
+
+//     res.json(emails);
+//   } catch (error) {
+//     console.error("Email fetch error:", error);
+//     res.status(500).json({ error: "Failed to fetch emails" });
+//   }
+// });
+
+// // Send email
+// app.post("/send-email", async (req, res) => {
+//   try {
+//     const userId = req.headers.authorization?.split(" ")[1];
+//     if (!userId) throw new Error("Missing user token");
+
+//     await ensureValidToken(userId);
+//     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+//     const { to, subject, body } = req.body;
+
+//     const rawEmail = [`To: ${to}`, `Subject: ${subject}`, "", body].join("\n");
+//     const encodedMessage = Buffer.from(rawEmail)
+//       .toString("base64")
+//       .replace(/\+/g, "-")
+//       .replace(/\//g, "_")
+//       .replace(/=+$/, "");
+
+//     await gmail.users.messages.send({
+//       userId: "me",
+//       requestBody: { raw: encodedMessage },
+//     });
+
+//     res.json({ message: "✅ Email Sent Successfully!" });
+//   } catch (error) {
+//     console.error("Error sending email:", error);
+//     res.status(500).json({ error: "Failed to send email" });
+//   }
+// });
+
+// // Send HTML email
+// app.post("/send-email-html", async (req, res) => {
+//   try {
+//     const userId = req.headers.authorization?.split(" ")[1];
+//     if (!userId) throw new Error("Missing user token");
+
+//     await ensureValidToken(userId);
+//     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+//     const { recipient, subject, viewHTMLCode } = req.body;
+
+//     const email = [
+//       `To: ${recipient}`,
+//       `Subject: ${subject}`,
+//       `Content-Type: text/html; charset=UTF-8`,
+//       "",
+//       viewHTMLCode,
+//     ].join("\n");
+
+//     const encodedMessage = Buffer.from(email)
+//       .toString("base64")
+//       .replace(/\+/g, "-")
+//       .replace(/\//g, "_")
+//       .replace(/=+$/, "");
+
+//     const response = await gmail.users.messages.send({
+//       userId: "me",
+//       requestBody: { raw: encodedMessage },
+//     });
+
+//     res.json({ message: "✅ HTML Email Sent!", data: response.data });
+//   } catch (error) {
+//     console.error("Error sending HTML email:", error);
+//     res.status(500).json({ error: "Failed to send email" });
+//   }
+// });
+
+// // Start server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { google } from "googleapis";
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import { simpleParser } from "mailparser";
+import cron from "node-cron";
+import { getEmbedding } from "./utils/embed";
+import { upsertToPinecone } from "./utils/pinecone";
+import { fetchEmailsAndStoreInPinecone } from "./utils/syncEmails";
 
-// Init
+// Initialize environment variables
 dotenv.config();
-const app = express();
-app.use(cors());
-app.use(express.json());
 
-// Supabase client
+// Initialize Express app
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// Initialize Supabase client
 const supabase = createClient(
-  "https://btcksyamxntsccpafbzd.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0Y2tzeWFteG50c2NjcGFmYnpkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjkzOTUxMCwiZXhwIjoyMDYyNTE1NTEwfQ.wG5G5De-gtGLMOClbHP1VxEdyOnIH8BBIBwmxm_a1AE"
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_KEY!
 );
 
-// Google OAuth2
+// Initialize Google OAuth2 client
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  "https://goflow-8.onrender.com/oauth-callback"
+  process.env.REDIRECT_URI || "https://goflow-8.onrender.com/oauth-callback"
 );
 
-// Save tokens in Supabase
+// Save tokens to Supabase
 async function saveTokensToSupabase(userId: string, tokens: any) {
   const { error } = await supabase.from("gmail_tokens").upsert({
     user_id: userId,
@@ -490,8 +705,14 @@ async function saveTokensToSupabase(userId: string, tokens: any) {
     token_type: tokens.token_type,
     expiry_date: tokens.expiry_date || Date.now() + 3600 * 1000,
   });
-  if (error) console.error("❌ Token save error:", error);
-  else console.log("✅ Token saved for:", userId);
+
+  if (error) {
+    console.error("❌ Token save error:", error);
+    return false;
+  }
+  
+  console.log("✅ Token saved for:", userId);
+  return true;
 }
 
 // Load tokens from Supabase
@@ -506,20 +727,100 @@ async function loadTokensFromSupabase(userId: string) {
     console.error("❌ Token load error:", error || "Token not found");
     return null;
   }
+  
   return data;
 }
 
-// Ensure token is valid
+// Ensure token is valid, refresh if needed
 async function ensureValidToken(userId: string) {
   const tokens = await loadTokensFromSupabase(userId);
-  if (!tokens) throw new Error("Unauthorized: No token found");
+  if (!tokens) {
+    throw new Error("Unauthorized: No token found");
+  }
 
   oauth2Client.setCredentials(tokens);
+  
+  // Check if token is expired
   if (!tokens.expiry_date || tokens.expiry_date < Date.now()) {
-    const { credentials } = await oauth2Client.refreshAccessToken();
-    await saveTokensToSupabase(userId, credentials);
-    oauth2Client.setCredentials(credentials);
+    console.log("🔄 Refreshing access token...");
+    try {
+      const { credentials } = await oauth2Client.refreshAccessToken();
+      await saveTokensToSupabase(userId, credentials);
+      oauth2Client.setCredentials(credentials);
+    } catch (error) {
+      console.error("❌ Error refreshing token:", error);
+      throw new Error("Failed to refresh token");
+    }
   }
+  
+  return oauth2Client;
+}
+
+// Start Gmail sync job for unread emails
+function startGmailSyncJob(userId: string) {
+  console.log(`🔄 Starting Gmail sync job for user: ${userId}`);
+  
+  return cron.schedule("*/10 * * * *", async () => { // Every 10 minutes
+    try {
+      const auth = await ensureValidToken(userId);
+      const gmail = google.gmail({ version: "v1", auth });
+
+      const res = await gmail.users.messages.list({
+        userId: "me",
+        q: "is:unread", // Customize query as needed
+        maxResults: 5,
+      });
+
+      const messages = res.data.messages || [];
+      console.log(`📬 Found ${messages.length} unread messages`);
+
+      for (const message of messages) {
+        const msg = await gmail.users.messages.get({
+          userId: "me",
+          id: message.id!,
+        });
+
+        const snippet = msg.data.snippet || "";
+        const subjectHeader = msg.data.payload?.headers?.find(
+          (h) => h.name === "Subject"
+        );
+        const subject = subjectHeader?.value || "(No Subject)";
+
+        // Embed and send to Pinecone if enabled
+        if (process.env.ENABLE_PINECONE === "true") {
+          try {
+            const vector = await getEmbedding(snippet);
+            await upsertToPinecone({
+              id: `gmail-${message.id}`,
+              values: vector,
+              metadata: {
+                subject,
+                snippet,
+                date: msg.data.internalDate,
+              },
+            });
+          } catch (embedError) {
+            console.error("❌ Error embedding email:", embedError);
+          }
+        }
+
+        // Optionally mark as read
+        if (process.env.MARK_AS_READ === "true") {
+          await gmail.users.messages.modify({
+            userId: "me",
+            id: message.id!,
+            requestBody: {
+              removeLabelIds: ["UNREAD"],
+            },
+          });
+        }
+
+        console.log("📩 Synced email:", subject);
+      }
+    } catch (err) {
+      console.error("❌ Error in Gmail sync job:", err);
+    }
+  });
 }
 
 // Auth URL endpoint
@@ -536,6 +837,7 @@ app.get("/auth-url", (req, res) => {
       "https://www.googleapis.com/auth/userinfo.profile",
     ],
   });
+  
   res.json({ url });
 });
 
@@ -543,65 +845,200 @@ app.get("/auth-url", (req, res) => {
 app.get("/oauth-callback", async (req, res) => {
   try {
     const { code } = req.query;
+    if (!code) {
+      return res.status(400).json({ error: "Missing authorization code" });
+    }
+    
     const { tokens } = await oauth2Client.getToken(code as string);
     oauth2Client.setCredentials(tokens);
 
+    // Get user email for user identification
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
     const profile = await gmail.users.getProfile({ userId: "me" });
     const email = profile.data.emailAddress!;
 
+    // Save tokens to database
     await saveTokensToSupabase(email, tokens);
-    res.redirect("https://go-flow-mu.vercel.app/category/sent?token=${email} || \"\"");
+    
+    console.log("✅ OAuth Success! Tokens saved for:", email);
+
+    // Start sync job if enabled
+    if (process.env.ENABLE_EMAIL_SYNC === "true") {
+      startGmailSyncJob(email);
+    }
+
+    // Redirect to frontend
+    const redirectUrl = process.env.FRONTEND_URL || "https://go-flow-mu.vercel.app/category/sent";
+    res.redirect(`${redirectUrl}?token=${encodeURIComponent(email)}`);
   } catch (error) {
-    console.error("OAuth Callback Error:", error);
-    res.status(500).send("Authentication failed");
+    console.error("❌ OAuth Callback Error:", error);
+    res.status(500).send("OAuth authentication failed");
   }
 });
 
-// Fetch emails
+// List emails endpoint
 app.get("/emails", async (req, res) => {
   try {
     const userId = req.headers.authorization?.split(" ")[1];
-    if (!userId) throw new Error("Missing user token");
+    if (!userId) {
+      return res.status(401).json({ error: "Missing user token" });
+    }
 
     await ensureValidToken(userId);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-    const label = req.query.label as string;
+    
+    // Extract query parameters
+    const emailLabel = req.query.label as string;
+    const query = emailLabel ? `label:${emailLabel}` : "in:anywhere";
+    const maxResults = parseInt(req.query.max as string) || 20;
 
+    // Fetch labels for mapping
+    const labelsResponse = await gmail.users.labels.list({ userId: "me" });
+    const labelsMap = new Map(
+      labelsResponse.data.labels?.map((l) => [l.id, l.name]) || []
+    );
+
+    // Fetch email list
     const response = await gmail.users.messages.list({
       userId: "me",
-      maxResults: 10,
-      q: label ? `label:${label}` : "in:anywhere",
+      maxResults,
+      q: query,
     });
 
-    const messages = response.data.messages || [];
+    if (!response.data.messages) {
+      return res.json([]);
+    }
+
+    // Fetch each email's details
     const emails = await Promise.all(
-      messages.map(async (msg) => {
-        const email = await gmail.users.messages.get({
-          userId: "me",
-          id: msg.id!,
-          format: "raw",
-        });
-        return email.data;
+      response.data.messages.map(async (msg) => {
+        try {
+          const email = await gmail.users.messages.get({
+            userId: "me",
+            id: msg.id!,
+            format: "raw",
+          });
+          
+          if (!email.data.raw) return null;
+
+          const parsedEmail = await simpleParser(
+            Buffer.from(email.data.raw, "base64")
+          );
+          
+          const emailLabels =
+            email.data.labelIds
+              ?.map((id) => {
+                const labelName = labelsMap.get(id);
+                return labelName ? labelName.split(" ").pop() : null;
+              })
+              .filter(Boolean)
+              .join(", ") || "Unknown";
+
+          return {
+            id: email.data.id,
+            threadId: email.data.threadId,
+            from: parsedEmail.from?.text || "Unknown",
+            to: parsedEmail.to?.text || "Unknown",
+            subject: parsedEmail.subject || "No Subject",
+            snippet: email.data.snippet,
+            labels: emailLabels,
+            date: parsedEmail.date || new Date(),
+            body: parsedEmail.html || parsedEmail.textAsHtml || "No Content",
+          };
+        } catch (emailError) {
+          console.error("❌ Error fetching email:", emailError);
+          return null;
+        }
       })
     );
 
-    res.json(emails);
+    res.json(emails.filter((email) => email !== null));
   } catch (error) {
-    console.error("Email fetch error:", error);
+    console.error("❌ Error fetching emails:", error);
+    if (error.message.includes("Unauthorized")) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
     res.status(500).json({ error: "Failed to fetch emails" });
   }
 });
 
-// Send email
+// Get single email details
+app.get("/emails/:id", async (req, res) => {
+  try {
+    const userId = req.headers.authorization?.split(" ")[1];
+    if (!userId) {
+      return res.status(401).json({ error: "Missing user token" });
+    }
+
+    await ensureValidToken(userId);
+    
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "Email ID is required" });
+    }
+
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+
+    // Get email with raw format
+    const email = await gmail.users.messages.get({
+      userId: "me",
+      id,
+      format: "raw",
+    });
+
+    if (!email.data) {
+      return res.status(404).json({ error: "Email not found" });
+    }
+
+    if (!email.data.raw) {
+      return res.status(500).json({ error: "Email raw content not available" });
+    }
+
+    // Parse the raw email
+    const parsedEmail = await simpleParser(
+      Buffer.from(email.data.raw, "base64")
+    );
+    
+    res.json({
+      id: email.data.id,
+      threadId: email.data.threadId,
+      from: parsedEmail.from?.text || "Unknown",
+      to: parsedEmail.to?.text || "Unknown",
+      cc: parsedEmail.cc?.text || "",
+      bcc: parsedEmail.bcc?.text || "",
+      subject: parsedEmail.subject || "No Subject",
+      date: parsedEmail.date || new Date(),
+      text: parsedEmail.text || "",
+      html: parsedEmail.html || parsedEmail.textAsHtml || "",
+      attachments: parsedEmail.attachments || [],
+    });
+  } catch (error) {
+    console.error("❌ Error fetching email:", error);
+    if (error.message.includes("Unauthorized")) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    res.status(500).json({
+      error: "Failed to fetch email",
+      details: error.message,
+    });
+  }
+});
+
+// Send plain text email
 app.post("/send-email", async (req, res) => {
   try {
     const userId = req.headers.authorization?.split(" ")[1];
-    if (!userId) throw new Error("Missing user token");
+    if (!userId) {
+      return res.status(401).json({ error: "Missing user token" });
+    }
 
     await ensureValidToken(userId);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+    
     const { to, subject, body } = req.body;
+    if (!to || !subject || !body) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     const rawEmail = [`To: ${to}`, `Subject: ${subject}`, "", body].join("\n");
     const encodedMessage = Buffer.from(rawEmail)
@@ -610,14 +1047,17 @@ app.post("/send-email", async (req, res) => {
       .replace(/\//g, "_")
       .replace(/=+$/, "");
 
-    await gmail.users.messages.send({
+    const response = await gmail.users.messages.send({
       userId: "me",
       requestBody: { raw: encodedMessage },
     });
 
-    res.json({ message: "✅ Email Sent Successfully!" });
+    res.json({ message: "✅ Email Sent Successfully!", messageId: response.data.id });
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("❌ Error sending email:", error);
+    if (error.message.includes("Unauthorized")) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
     res.status(500).json({ error: "Failed to send email" });
   }
 });
@@ -626,11 +1066,17 @@ app.post("/send-email", async (req, res) => {
 app.post("/send-email-html", async (req, res) => {
   try {
     const userId = req.headers.authorization?.split(" ")[1];
-    if (!userId) throw new Error("Missing user token");
+    if (!userId) {
+      return res.status(401).json({ error: "Missing user token" });
+    }
 
     await ensureValidToken(userId);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+    
     const { recipient, subject, viewHTMLCode } = req.body;
+    if (!recipient || !subject || !viewHTMLCode) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     const email = [
       `To: ${recipient}`,
@@ -639,7 +1085,7 @@ app.post("/send-email-html", async (req, res) => {
       "",
       viewHTMLCode,
     ].join("\n");
-
+    
     const encodedMessage = Buffer.from(email)
       .toString("base64")
       .replace(/\+/g, "-")
@@ -653,11 +1099,124 @@ app.post("/send-email-html", async (req, res) => {
 
     res.json({ message: "✅ HTML Email Sent!", data: response.data });
   } catch (error) {
-    console.error("Error sending HTML email:", error);
-    res.status(500).json({ error: "Failed to send email" });
+    console.error("❌ Error sending HTML email:", error);
+    if (error.response) {
+      console.error("API Response Error:", error.response.data);
+    }
+    if (error.message.includes("Unauthorized")) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    res.status(500).json({
+      error: "Failed to send email",
+      message: error.message,
+    });
   }
+});
+
+// Delete email
+app.delete("/emails/:id", async (req, res) => {
+  try {
+    const userId = req.headers.authorization?.split(" ")[1];
+    if (!userId) {
+      return res.status(401).json({ error: "Missing user token" });
+    }
+
+    await ensureValidToken(userId);
+    
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "Email ID is required" });
+    }
+
+    console.log(`🗑️ Attempting to delete email with ID: ${id}`);
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+
+    // Delete the email
+    await gmail.users.messages.delete({
+      userId: "me",
+      id,
+    });
+
+    console.log(`✅ Email with ID ${id} deleted successfully!`);
+    res.json({ message: "✅ Email deleted successfully!" });
+  } catch (error) {
+    console.error("❌ Error deleting email:", error);
+
+    if (error.message.includes("Unauthorized")) {
+      return res.status(401).json({
+        error: "Authentication required. Please login again.",
+      });
+    }
+    if (error.code === 404) {
+      return res.status(404).json({ error: "Email not found" });
+    }
+
+    res.status(500).json({
+      error: "❌ Failed to delete email",
+      details: error.message,
+    });
+  }
+});
+
+// Logout endpoint
+app.post("/logout", async (req, res) => {
+  try {
+    const userId = req.headers.authorization?.split(" ")[1];
+    if (!userId) {
+      return res.status(401).json({ error: "Missing user token" });
+    }
+    
+    // Option 1: Delete tokens from Supabase
+    const { error } = await supabase
+      .from("gmail_tokens")
+      .delete()
+      .eq("user_id", userId);
+      
+    if (error) {
+      console.error("❌ Error deleting tokens:", error);
+      return res.status(500).json({ error: "Failed to logout" });
+    }
+    
+    res.json({ message: "✅ Logged out successfully!" });
+  } catch (error) {
+    console.error("❌ Error during logout:", error);
+    res.status(500).json({ error: "Failed to log out" });
+  }
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  
+  // Start sync jobs for active users if enabled
+  if (process.env.ENABLE_EMAIL_SYNC === "true") {
+    initSyncJobs();
+  }
+});
+
+// Initialize sync jobs for all active users
+async function initSyncJobs() {
+  try {
+    const { data, error } = await supabase
+      .from("gmail_tokens")
+      .select("user_id");
+      
+    if (error) {
+      console.error("❌ Error loading users for sync jobs:", error);
+      return;
+    }
+    
+    console.log(`🔄 Setting up sync jobs for ${data.length} users`);
+    for (const user of data) {
+      startGmailSyncJob(user.user_id);
+    }
+  } catch (error) {
+    console.error("❌ Error initializing sync jobs:", error);
+  }
+}
