@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 // import Image from "next/image";
 // import React, { useEffect } from "react";
 // import { Button } from "../ui/button";
@@ -295,7 +295,7 @@
 
 // // export default EditorHeader;
 
-"use client";
+// "use client";
 import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import { Code, Monitor, Smartphone } from "lucide-react";

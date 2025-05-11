@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 // import { useEmailTemplate } from "@/app/provider";
 // import Canvas from "@/components/custom/Canvas";
 // import EditorHeader from "@/components/custom/EditorHeader";
@@ -185,7 +185,7 @@
 
 // export default Editor;
 
-"use client";
+// "use client";
 import { useEmailTemplate } from "@/app/provider";
 import Canvas from "@/components/custom/Canvas";
 import EditorHeader from "@/components/custom/EditorHeader";
