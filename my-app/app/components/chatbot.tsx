@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import DOMPurify from "dompurify";
 import { Switch } from "@/components/ui/switch";
 import { useUser } from "@clerk/nextjs";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import "../globals.css";
 import { Sparkles, Check } from "lucide-react";
 import { useCompose } from "@/context/ComposeContext";
@@ -26,7 +26,7 @@ const ChatBot = () => {
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [isAskAI, setIsAskAI] = useState(true);
   const [isRefining, setIsRefining] = useState(false);
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const loggedInEmail = user?.primaryEmailAddress?.emailAddress || "";
   const textareaRef = useRef(null);
   const { isComposeOpen, isQuickComposeOpen, isLoading, setIsLoading } =
@@ -35,9 +35,13 @@ const ChatBot = () => {
   useEffect(() => {
     if (recipient.trim()) {
       if (typingTimeout) clearTimeout(typingTimeout);
-      setTypingTimeout(setTimeout(fetchEmails, 1000));
+      const timeout = setTimeout(() => {
+        fetchEmails();
+      }, 1000);
+      setTypingTimeout(timeout);
     }
-  }, [recipient]);
+    return () => clearTimeout(typingTimeout);
+  }, [recipient, user]); // <== make sure to include user as well
 
   const fetchEmails = async () => {
     if (!recipient.trim()) return;
@@ -172,7 +176,7 @@ const ChatBot = () => {
       setIsRefining(false);
     }
   };
-  const gmailId = user?.primaryEmailAddress?.emailAddress;
+  const gmailId = isLoaded ? user?.primaryEmailAddress?.emailAddress : "";
   const sendReply = async () => {
     if (!query.trim() || emails.length === 0) return;
 
@@ -200,25 +204,27 @@ const ChatBot = () => {
     };
 
     try {
+      if (!gmailId) throw new Error("Gmail ID not available");
+
       const response = await fetch("https://goflow-8.onrender.com/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`, // ✅ pass Gmail user ID
+          Authorization: `Bearer ${gmailId}`,
         },
         body: JSON.stringify(emailPayload),
       });
 
       if (!response.ok) {
-        console.error("Error sending email:", await response.text());
-        return;
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to send email");
       }
 
-      alert("Email sent successfully! ✅"); // Show alert
-      setQuery(""); // Clear input box
-      console.log("Reply sent successfully!");
+      alert("Email sent successfully ✅");
+      setQuery("");
     } catch (error) {
-      console.error("Error sending email:", error);
+      console.error("❌ Send error:", error);
+      alert(`Error: ${error.message}`);
     }
   };
 

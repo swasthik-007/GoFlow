@@ -450,7 +450,7 @@ function EditorHeader({ viewHTMLCode }: { viewHTMLCode: () => void }) {
               setBody,
               setIsLoading,
               setIsComposeOpen,
-              user // ✅ pass user here
+              user // <- pass user here
             )
           }
           variant="outline"
