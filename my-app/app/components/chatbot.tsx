@@ -204,7 +204,7 @@ const ChatBot = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${gmailId}`, // ✅ pass Gmail user ID
+          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`, // ✅ pass Gmail user ID
         },
         body: JSON.stringify(emailPayload),
       });

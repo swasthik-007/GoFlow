@@ -347,7 +347,11 @@ function EditorHeader({ viewHTMLCode }: { viewHTMLCode: () => void }) {
         "https://goflow-8.onrender.com/send-email-html",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
+            "Content-Type": "application/json",
+            
+          },
           body: JSON.stringify(emailData),
         }
       );

@@ -75,7 +75,7 @@ export default function CategoryPage() {
         `https://goflow-8.onrender.com/emails?label=${category}`,
         {
           headers: {
-            Authorization: `Bearer ${gmailId}`,
+            Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
           },
         }
       );

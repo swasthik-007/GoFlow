@@ -53,7 +53,7 @@ export const fetchEmails = async (setEmails, setIsLoading, user) => {
     setIsLoading(true);
     const response = await axios.get("https://goflow-8.onrender.com/emails", {
       headers: {
-        Authorization: `Bearer ${gmailId}`,
+        Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
       },
     });
 
