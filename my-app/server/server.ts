@@ -481,12 +481,21 @@ const oauth2Client = new google.auth.OAuth2(
 
 // Save tokens in Supabase
 async function saveTokensToSupabase(userId: string, tokens: any) {
+  const filteredTokens = {
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    scope: tokens.scope,
+    token_type: tokens.token_type,
+    expiry_date: tokens.expiry_date || Date.now() + 3600 * 1000,
+  };
+
   const { error } = await supabase.from("gmail_tokens").upsert({
     user_id: userId,
-    ...tokens,
-    expiry_date: tokens.expiry_date || Date.now() + 3600 * 1000,
+    ...filteredTokens,
   });
+
   if (error) console.error("❌ Token save error:", error);
+  else console.log("✅ Token saved for:", userId);
 }
 
 // Load tokens from Supabase
