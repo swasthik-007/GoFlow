@@ -196,7 +196,7 @@ app.get("/oauth-callback", async (req, res) => {
     console.log("✅ OAuth Success! Tokens saved.");
     // console.log("Received Tokens:", tokens);
 
-    res.redirect(`http://localhost:3000/category/sent || ""}`);
+    res.redirect(`https://goflow-8.onrender.com/category/sent || ""}`);
   } catch (error) {
     console.error("OAuth Callback Error:", error);
     res.status(500).send("OAuth authentication failed");
