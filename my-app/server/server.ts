@@ -551,7 +551,7 @@ app.get("/oauth-callback", async (req, res) => {
     const email = profile.data.emailAddress!;
 
     await saveTokensToSupabase(email, tokens);
-    res.redirect("https://go-flow-mu.vercel.app/category/sent || \"\"");
+    res.redirect("https://go-flow-mu.vercel.app/category/sent?token=${email} || \"\"");
   } catch (error) {
     console.error("OAuth Callback Error:", error);
     res.status(500).send("Authentication failed");
