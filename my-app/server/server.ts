@@ -469,7 +469,7 @@ app.use(express.json());
 // Supabase client
 const supabase = createClient(
   "https://btcksyamxntsccpafbzd.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0Y2tzeWFteG50c2NjcGFmYnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5Mzk1MTAsImV4cCI6MjA2MjUxNTUxMH0.1FgL1Xp8zkH3vIV8keS-u-502d83Dxtt2HOR7xUFCOQ"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0Y2tzeWFteG50c2NjcGFmYnpkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjkzOTUxMCwiZXhwIjoyMDYyNTE1NTEwfQ.wG5G5De-gtGLMOClbHP1VxEdyOnIH8BBIBwmxm_a1AE"
 );
 
 // Google OAuth2
