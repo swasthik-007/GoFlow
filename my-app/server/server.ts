@@ -475,8 +475,8 @@ app.use(express.json());
 
 // Supabase client
 const supabase = createClient(
-  process.env.PROJECT_URL!,
-  process.env.ANON_KEY!
+  "https://btcksyamxntsccpafbzd.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0Y2tzeWFteG50c2NjcGFmYnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5Mzk1MTAsImV4cCI6MjA2MjUxNTUxMH0.1FgL1Xp8zkH3vIV8keS-u-502d83Dxtt2HOR7xUFCOQ"
 );
 
 // Google OAuth2
