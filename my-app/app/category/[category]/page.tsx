@@ -91,25 +91,7 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
     fetchEmails();
   }, [fetchEmails]);
 
-  // const fetchEmails = useCallback(async () => {
-  //   if (!category) return;
 
-  //   setIsLoading(true);
-  //   try {
-  //     const emails = await fetchEmailsFromPinecone(category); // ✅ Now this is safe
-  //     setEmails(emails);
-
-  //   console.log("Fetched emails:", emails); // Debugging line
-  //   } catch (error) {
-  //     console.error("Error fetching from Pinecone:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, [category]);
-
-  // useEffect(() => {
-  //   fetchEmails();
-  // }, [fetchEmails]);
 
   const formatEmailBody = (rawHtml) => {
     if (!rawHtml) return "<p>No Content</p>";
@@ -280,7 +262,8 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
                                 handledelete(
                                   email?.id,
                                   setEmails,
-                                  setIsLoading
+                                  setIsLoading,
+                                  user
                                 );
                               }}
                               className="opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 ml-4"

@@ -1,4 +1,4 @@
-"use client";
+
 import { GenerateLayout_AI } from "@/configs/AiModel";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";

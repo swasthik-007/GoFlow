@@ -52,7 +52,7 @@ export default function CategoryPage() {
     setExpandedEmail,
     expandedEmail,
   } = useCompose();
-const gmailId = user?.primaryEmailAddress?.emailAddress;
+  const gmailId = user?.primaryEmailAddress?.emailAddress;
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromURL = urlParams.get("token");
@@ -73,10 +73,11 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
     try {
       const response = await axios.get(
         `https://goflow-8.onrender.com/emails?label=${category}`,
-        { headers: {
-  Authorization: `Bearer ${gmailId}`,
-}
- }
+        {
+          headers: {
+            Authorization: `Bearer ${gmailId}`,
+          },
+        }
       );
       setEmails(response.data);
     } catch (error) {
@@ -209,7 +210,7 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
                 <>
                   {/* {token && ( */}
                   <button
-                    onClick={fetchEmails}
+                    onClick={fetchEmails(setEmails, setIsLoading, user)}
                     disabled={isLoading}
                     className={`bg-gradient-to-br from-green-400 to-blue-600 text-white px-4 py-2 rounded w-full mb-4 transition ${
                       isComposeOpen || isQuickComposeOpen ? "opacity-30" : ""
@@ -254,7 +255,8 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
                                   email?.id,
                                   setEmails,
                                   setIsLoading,
-                                  token
+                                  token,
+                                  user
                                 );
                               }}
                               className="opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 ml-4"
