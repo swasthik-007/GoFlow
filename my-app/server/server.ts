@@ -107,7 +107,7 @@
 // export const oauth2Client = new google.auth.OAuth2(
 //   CLIENT_ID,
 //   CLIENT_SECRET,
-//   "https://goflow-8.onrender.com/oauth-callback"
+//   "https://goflow-9.onrender.com/oauth-callback"
 // );
 
 // app.post("/send-email-html", async (req, res) => {
@@ -477,7 +477,7 @@
 // const oauth2Client = new google.auth.OAuth2(
 //   process.env.GOOGLE_CLIENT_ID!,
 //   process.env.GOOGLE_CLIENT_SECRET!,
-//   "https://goflow-8.onrender.com/oauth-callback"
+//   "https://goflow-9.onrender.com/oauth-callback"
 // );
 
 // // Save tokens in Supabase
@@ -692,7 +692,7 @@ const supabase = createClient(
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  process.env.REDIRECT_URI || "https://goflow-8.onrender.com/oauth-callback"
+  process.env.REDIRECT_URI || "https://goflow-9.onrender.com/oauth-callback"
 );
 
 // Save tokens to Supabase
@@ -710,7 +710,7 @@ async function saveTokensToSupabase(userId: string, tokens: any) {
     console.error("❌ Token save error:", error);
     return false;
   }
-  
+
   console.log("✅ Token saved for:", userId);
   return true;
 }
@@ -727,7 +727,7 @@ async function loadTokensFromSupabase(userId: string) {
     console.error("❌ Token load error:", error || "Token not found");
     return null;
   }
-  
+
   return data;
 }
 
@@ -739,7 +739,7 @@ async function ensureValidToken(userId: string) {
   }
 
   oauth2Client.setCredentials(tokens);
-  
+
   // Check if token is expired
   if (!tokens.expiry_date || tokens.expiry_date < Date.now()) {
     console.log("🔄 Refreshing access token...");
@@ -752,15 +752,16 @@ async function ensureValidToken(userId: string) {
       throw new Error("Failed to refresh token");
     }
   }
-  
+
   return oauth2Client;
 }
 
 // Start Gmail sync job for unread emails
 function startGmailSyncJob(userId: string) {
   console.log(`🔄 Starting Gmail sync job for user: ${userId}`);
-  
-  return cron.schedule("*/10 * * * *", async () => { // Every 10 minutes
+
+  return cron.schedule("*/10 * * * *", async () => {
+    // Every 10 minutes
     try {
       const auth = await ensureValidToken(userId);
       const gmail = google.gmail({ version: "v1", auth });
@@ -837,7 +838,7 @@ app.get("/auth-url", (req, res) => {
       "https://www.googleapis.com/auth/userinfo.profile",
     ],
   });
-  
+
   res.json({ url });
 });
 
@@ -848,7 +849,7 @@ app.get("/oauth-callback", async (req, res) => {
     if (!code) {
       return res.status(400).json({ error: "Missing authorization code" });
     }
-    
+
     const { tokens } = await oauth2Client.getToken(code as string);
     oauth2Client.setCredentials(tokens);
 
@@ -859,7 +860,7 @@ app.get("/oauth-callback", async (req, res) => {
 
     // Save tokens to database
     await saveTokensToSupabase(email, tokens);
-    
+
     console.log("✅ OAuth Success! Tokens saved for:", email);
 
     // Start sync job if enabled
@@ -868,7 +869,8 @@ app.get("/oauth-callback", async (req, res) => {
     }
 
     // Redirect to frontend
-    const redirectUrl = process.env.FRONTEND_URL || "https://go-flow-mu.vercel.app/category/sent";
+    const redirectUrl =
+      process.env.FRONTEND_URL || "https://go-flow-mu.vercel.app/category/sent";
     res.redirect(`${redirectUrl}?token=${encodeURIComponent(email)}`);
   } catch (error) {
     console.error("❌ OAuth Callback Error:", error);
@@ -886,7 +888,7 @@ app.get("/emails", async (req, res) => {
 
     await ensureValidToken(userId);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-    
+
     // Extract query parameters
     const emailLabel = req.query.label as string;
     const query = emailLabel ? `label:${emailLabel}` : "in:anywhere";
@@ -918,13 +920,13 @@ app.get("/emails", async (req, res) => {
             id: msg.id!,
             format: "raw",
           });
-          
+
           if (!email.data.raw) return null;
 
           const parsedEmail = await simpleParser(
             Buffer.from(email.data.raw, "base64")
           );
-          
+
           const emailLabels =
             email.data.labelIds
               ?.map((id) => {
@@ -971,7 +973,7 @@ app.get("/emails/:id", async (req, res) => {
     }
 
     await ensureValidToken(userId);
-    
+
     const { id } = req.params;
     if (!id) {
       return res.status(400).json({ error: "Email ID is required" });
@@ -998,7 +1000,7 @@ app.get("/emails/:id", async (req, res) => {
     const parsedEmail = await simpleParser(
       Buffer.from(email.data.raw, "base64")
     );
-    
+
     res.json({
       id: email.data.id,
       threadId: email.data.threadId,
@@ -1034,7 +1036,7 @@ app.post("/send-email", async (req, res) => {
 
     await ensureValidToken(userId);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-    
+
     const { to, subject, body } = req.body;
     if (!to || !subject || !body) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -1052,7 +1054,10 @@ app.post("/send-email", async (req, res) => {
       requestBody: { raw: encodedMessage },
     });
 
-    res.json({ message: "✅ Email Sent Successfully!", messageId: response.data.id });
+    res.json({
+      message: "✅ Email Sent Successfully!",
+      messageId: response.data.id,
+    });
   } catch (error) {
     console.error("❌ Error sending email:", error);
     if (error.message.includes("Unauthorized")) {
@@ -1072,7 +1077,7 @@ app.post("/send-email-html", async (req, res) => {
 
     await ensureValidToken(userId);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-    
+
     const { recipient, subject, viewHTMLCode } = req.body;
     if (!recipient || !subject || !viewHTMLCode) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -1085,7 +1090,7 @@ app.post("/send-email-html", async (req, res) => {
       "",
       viewHTMLCode,
     ].join("\n");
-    
+
     const encodedMessage = Buffer.from(email)
       .toString("base64")
       .replace(/\+/g, "-")
@@ -1122,7 +1127,7 @@ app.delete("/emails/:id", async (req, res) => {
     }
 
     await ensureValidToken(userId);
-    
+
     const { id } = req.params;
     if (!id) {
       return res.status(400).json({ error: "Email ID is required" });
@@ -1165,18 +1170,18 @@ app.post("/logout", async (req, res) => {
     if (!userId) {
       return res.status(401).json({ error: "Missing user token" });
     }
-    
+
     // Option 1: Delete tokens from Supabase
     const { error } = await supabase
       .from("gmail_tokens")
       .delete()
       .eq("user_id", userId);
-      
+
     if (error) {
       console.error("❌ Error deleting tokens:", error);
       return res.status(500).json({ error: "Failed to logout" });
     }
-    
+
     res.json({ message: "✅ Logged out successfully!" });
   } catch (error) {
     console.error("❌ Error during logout:", error);
@@ -1193,7 +1198,7 @@ app.get("/health", (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  
+
   // Start sync jobs for active users if enabled
   if (process.env.ENABLE_EMAIL_SYNC === "true") {
     initSyncJobs();
@@ -1206,12 +1211,12 @@ async function initSyncJobs() {
     const { data, error } = await supabase
       .from("gmail_tokens")
       .select("user_id");
-      
+
     if (error) {
       console.error("❌ Error loading users for sync jobs:", error);
       return;
     }
-    
+
     console.log(`🔄 Setting up sync jobs for ${data.length} users`);
     for (const user of data) {
       startGmailSyncJob(user.user_id);

@@ -77,7 +77,7 @@ export default function OAuthRedirect() {
 
       try {
         const { data } = await axios.get(
-          "https://goflow-8.onrender.com/auth-url",
+          "https://goflow-9.onrender.com/auth-url",
           {
             params: { userId }, // Send user ID if needed
           }
