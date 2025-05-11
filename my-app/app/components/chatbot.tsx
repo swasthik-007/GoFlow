@@ -167,7 +167,7 @@ const ChatBot = () => {
       setIsRefining(false);
     }
   };
-
+const gmailId = user?.primaryEmailAddress?.emailAddress;
   const sendReply = async () => {
     if (!query.trim() || emails.length === 0) return;
 
@@ -199,7 +199,7 @@ const ChatBot = () => {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${user.emailAddress}`, // ✅ pass Gmail user ID
+    Authorization: `Bearer ${gmailId}`, // ✅ pass Gmail user ID
   },
   body: JSON.stringify(emailPayload),
 });

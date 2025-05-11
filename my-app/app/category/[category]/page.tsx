@@ -47,7 +47,7 @@ export default function CategoryPage() {
     setExpandedEmail,
     expandedEmail,
   } = useCompose();
-
+const gmailId = user?.primaryEmailAddress?.emailAddress;
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromURL = urlParams.get("token");
@@ -73,7 +73,7 @@ export default function CategoryPage() {
       const response = await axios.get(
   `https://goflow-8.onrender.com/emails?label=${category}`,
   { headers: {
-  Authorization: `Bearer ${user.emailAddress}`,
+  Authorization: `Bearer ${gmailId}`,
 }
 }
 );

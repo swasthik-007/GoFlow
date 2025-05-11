@@ -18,7 +18,7 @@ export const handledelete = async (id, setEmails, setIsLoading, token) => {
       `https://goflow-8.onrender.com/emails/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${user.emailAddress}`,
+          Authorization: `Bearer ${gmailId}`,
         },
       }
     );
@@ -47,7 +47,7 @@ export const fetchEmails = async (setEmails, setIsLoading, authToken) => {
     setIsLoading(true);
     const response = await axios.get("https://goflow-8.onrender.com/emails", {
       headers: {
-        Authorization: `Bearer ${user.emailAddress}`,
+        Authorization: `Bearer ${gmailId}`,
       },
     });
 
@@ -216,7 +216,7 @@ export const formatEmailBody = (rawHtml) => {
     return "<p>Error displaying email content</p>";
   }
 };
-
+const gmailId = user?.primaryEmailAddress?.emailAddress;
 export const handleSendEmail = async (
   e,
   to,
@@ -246,7 +246,7 @@ export const handleSendEmail = async (
       },
       {
         headers: {
-          Authorization: `Bearer ${user.emailAddress}`,
+          Authorization: `Bearer ${gmailId}`,
         },
       }
     );
