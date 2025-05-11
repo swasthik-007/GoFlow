@@ -71,9 +71,10 @@ export default function CategoryPage() {
     try {
       console.log("fetching");
       const response = await axios.get(
-        `https://goflow-8.onrender.com/emails?label=${category}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  `https://goflow-8.onrender.com/emails?label=${category}`,
+  { headers: { Authorization: `Bearer ${user.primaryEmailAddress.emailAddress}` } }
+);
+
       setEmails(response.data);
     } catch (error) {
       console.error("Error fetching emails:", error);
