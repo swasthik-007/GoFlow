@@ -41,47 +41,44 @@ import DOMPurify from "dompurify";
 //     setIsLoading(false);
 //   }
 // };
-
-export const handledelete = async (id, setEmails, setIsLoading, user) => {
-  if (!id) {
-    console.error("❌ Error: Email ID is undefined!");
-    alert("Invalid email ID!");
+export const handleDeleteEmail = async (
+  emailId,
+  user,
+  fetchEmails, // optional callback to refresh inbox
+  setIsLoading // optional loading state handler
+) => {
+  if (!emailId) {
+    alert("❌ Email ID is missing.");
     return;
   }
 
   const gmailId = user?.primaryEmailAddress?.emailAddress;
   if (!gmailId) {
-    alert("User email not found. Please sign in again.");
+    alert("❌ User email not found.");
     return;
   }
 
-  console.log("🗑️ Attempting to delete email with ID:", id);
-  setIsLoading(true);
-
   try {
-    const response = await axios.delete(
-      `https://goflow-8.onrender.com/emails/${id}`,
+    if (setIsLoading) setIsLoading(true);
+
+    const res = await axios.delete(
+      `https://goflow-8.onrender.com/emails/${emailId}`,
       {
         headers: {
-          Authorization: `Bearer ${gmailId}`, // 🔐 this is critical
+          Authorization: `Bearer ${gmailId}`,
         },
       }
     );
 
-    if (response.status === 200) {
-      setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
-      alert("✅ Email deleted successfully!");
-    } else {
-      throw new Error("Server returned non-200 status");
-    }
+    alert(res.data.message || "✅ Email deleted!");
+    if (fetchEmails) await fetchEmails(); // ✅ refresh list after delete
   } catch (error) {
     console.error("❌ Error deleting email:", error);
-    alert(`Failed to delete email: ${error.message}`);
+    alert(error.response?.data?.error || "Failed to delete email.");
   } finally {
-    setIsLoading(false);
+    if (setIsLoading) setIsLoading(false);
   }
 };
-
 
 export const fetchEmails = async (setEmails, setIsLoading, user) => {
   const gmailId = user?.primaryEmailAddress?.emailAddress;
