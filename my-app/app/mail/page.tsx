@@ -12,7 +12,7 @@ import Sidebar from "@/components/sidebars";
 import Header from "@/app/components/Header";
 import { SignInButton, useUser } from "@clerk/nextjs";
 // import { useCompose } from "@/app/context/ComposeContext";
-import { handledelete } from "@/app/helper/index";
+import { handleDelete } from "@/app/helper/index";
 import { useCompose } from "@/context/ComposeContext";
 
 // Add this helper function to strip HTML tags and get plain text
@@ -251,7 +251,7 @@ export default function CategoryPage() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handledelete(
+                                handleDelete(
                                   email?.id,
                                   setEmails,
                                   setIsLoading,

@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
 // const { user } = useUser();
 // const gmailId = user?.primaryEmailAddress?.emailAddress;
 // import { GenerateLayout_AI }
-// export const handledelete = async (id, setEmails, setIsLoading, user) => {
+// export const handleDelete = async (id, setEmails, setIsLoading, user) => {
 //   const gmailId = user?.primaryEmailAddress?.emailAddress;
 //   if (!gmailId) {
 //     alert("User email not found.");
@@ -41,7 +41,7 @@ import DOMPurify from "dompurify";
 //     setIsLoading(false);
 //   }
 // };
-export const handleDeleteEmail = async (
+export const handleDelete = async (
   emailId,
   user,
   fetchEmails, // optional callback to refresh inbox
