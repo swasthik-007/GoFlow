@@ -54,12 +54,21 @@ const ChatBot = () => {
       });
 
       const recipientLower = recipient.trim().toLowerCase();
-      const filteredEmails = res.data.filter(
-        (email) =>
-          email.from.toLowerCase().includes(recipientLower) ||
-          email.to.toLowerCase().includes(recipientLower) ||
-          email.body.toLowerCase().includes(recipientLower)
-      );
+      const filteredEmails = res.data.filter((email) => {
+        const from = email.from?.toLowerCase() || "";
+        const to = email.to?.toLowerCase() || "";
+        const body = email.body?.toLowerCase() || "";
+        return (
+          from.includes(recipientLower) ||
+          to.includes(recipientLower) ||
+          body.includes(recipientLower)
+        );
+      });
+      res.data.forEach((email, i) => {
+        if (!email.from || !email.to || !email.body) {
+          console.warn(`⚠️ Email missing fields at index ${i}:`, email);
+        }
+      });
 
       setEmails(filteredEmails);
     } catch (err) {
