@@ -669,7 +669,6 @@ import { google } from "googleapis";
 import { createClient } from "@supabase/supabase-js";
 import { simpleParser } from "mailparser";
 
-
 // Initialize environment variables
 dotenv.config();
 
@@ -688,8 +687,7 @@ const supabase = createClient(
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  process.env.REDIRECT_URI ||
-    "https://goflow-9-jof0.onrender.com/oauth-callback"
+  "https://goflow-9-jof0.onrender.com/oauth-callback"
 );
 
 // Save tokens to Supabase
@@ -754,7 +752,6 @@ async function ensureValidToken(userId: string) {
 }
 
 // Start Gmail sync job for unread emails
-
 
 // Auth URL endpoint
 app.get("/auth-url", (req, res) => {
@@ -1121,14 +1118,10 @@ app.post("/logout", async (req, res) => {
   }
 });
 
-
-
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-
-
 });
 
 // Initialize sync jobs for all active user
