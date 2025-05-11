@@ -110,9 +110,8 @@
 //   "https://goflow-8.onrender.com/oauth-callback"
 // );
 
-
 // app.post("/send-email-html", async (req, res) => {
- 
+
 //   try {
 //     await ensureValidToken();
 
@@ -142,18 +141,15 @@
 //       .replace(/\//g, "_")
 //       .replace(/=+$/, "");
 
-   
 //     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-   
+
 //     const response = await gmail.users.messages.send({
 //       userId: "me",
 //       requestBody: { raw: encodedMessage },
 //     });
-   
 
 //     return res.json({ message: "✅ Email Sent!", data: response.data });
 //   } catch (error) {
-   
 
 //     if (error.response) {
 //       console.error("API Response Error:", error.response.data);
@@ -205,7 +201,6 @@
 //     await saveTokensToSupabase(userEmail, tokens);
 
 //     console.log("✅ OAuth Success! Tokens saved.");
-    
 
 //     res.redirect(`https://go-flow-mu.vercel.app/category/sent || ""}`);
 //   } catch (error) {
@@ -315,8 +310,6 @@
 //     res.status(500).json({ error: "Failed to fetch emails" });
 //   }
 // });
-
-
 
 // app.post("/send-email", async (req, res) => {
 //   try {
@@ -483,7 +476,7 @@ const supabase = createClient(
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  process.env.REDIRECT_URI!
+  "https://goflow-8.onrender.com/oauth-callback"
 );
 
 // Save tokens in Supabase
@@ -535,7 +528,7 @@ app.get("/auth-url", (req, res) => {
       "https://www.googleapis.com/auth/gmail.modify",
       "https://mail.google.com/",
       "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/userinfo.profile"
+      "https://www.googleapis.com/auth/userinfo.profile",
     ],
   });
   res.json({ url });
@@ -554,7 +547,7 @@ app.get("/oauth-callback", async (req, res) => {
 
     await saveTokensToSupabase(email, tokens);
 
-    res.redirect("https://go-flow-mu.vercel.app/category/sent || \"\"");
+    res.redirect('https://go-flow-mu.vercel.app/category/sent || ""');
   } catch (error) {
     console.error("OAuth Callback Error:", error);
     res.status(500).send("Authentication failed");
@@ -568,7 +561,10 @@ app.get("/emails", async (req, res) => {
     await ensureValidToken(userId);
 
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-    const response = await gmail.users.messages.list({ userId: "me", maxResults: 10 });
+    const response = await gmail.users.messages.list({
+      userId: "me",
+      maxResults: 10,
+    });
 
     res.json(response.data);
   } catch (error) {
