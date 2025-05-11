@@ -87,7 +87,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI!;
 export const oauth2Client = new google.auth.OAuth2(
   CLIENT_ID,
   CLIENT_SECRET,
-  REDIRECT_URI
+  "https://goflow-8.onrender.com/oauth-callback"
 );
 app.post("/send-email-html", async (req, res) => {
   // console.log("📧 Send Email HTML request received");
