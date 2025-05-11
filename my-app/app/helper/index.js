@@ -1,19 +1,25 @@
+"use client";
 import { GenerateLayout_AI } from "@/configs/AiModel";
 import axios from "axios";
-
+import { useUser } from "@clerk/nextjs";
 import DOMPurify from "dompurify";
+// const { user } = useUser();
+// const gmailId = user?.primaryEmailAddress?.emailAddress;
 // import { GenerateLayout_AI }
-export const handledelete = async (id, setEmails, setIsLoading, token) => {
+export const handledelete = async (id, setEmails, setIsLoading, user) => {
+  const gmailId = user?.primaryEmailAddress?.emailAddress;
+  if (!gmailId) {
+    alert("User email not found.");
+    return;
+  }
+
   if (!id) {
-    console.error("❌ Error: Email ID is undefined!");
     alert("Invalid email ID!");
     return;
   }
 
-  console.log("🗑️ Attempting to delete email with ID:", id);
-  setIsLoading(true);
-
   try {
+    setIsLoading(true);
     const response = await axios.delete(
       `https://goflow-8.onrender.com/emails/${id}`,
       {
@@ -37,9 +43,10 @@ export const handledelete = async (id, setEmails, setIsLoading, token) => {
   }
 };
 
-export const fetchEmails = async (setEmails, setIsLoading, authToken) => {
-  if (!authToken) {
-    console.log("❌ No OAuth token found. Gmail authentication needed.");
+export const fetchEmails = async (setEmails, setIsLoading, user) => {
+  const gmailId = user?.primaryEmailAddress?.emailAddress;
+  if (!gmailId) {
+    console.log("❌ No Gmail ID. User not authenticated.");
     return;
   }
 
@@ -216,7 +223,7 @@ export const formatEmailBody = (rawHtml) => {
     return "<p>Error displaying email content</p>";
   }
 };
-const gmailId = user?.primaryEmailAddress?.emailAddress;
+
 export const handleSendEmail = async (
   e,
   to,
@@ -226,12 +233,14 @@ export const handleSendEmail = async (
   setSubject,
   setBody,
   setIsLoading,
-  setIsComposeOpen
+  setIsComposeOpen,
+  user // ✅ add user
 ) => {
   e.preventDefault();
 
-  if (!to || !subject || !body) {
-    alert("Please fill in all fields before sending.");
+  const gmailId = user?.primaryEmailAddress?.emailAddress; // ✅ use it here
+  if (!gmailId) {
+    alert("User email not found.");
     return;
   }
 
@@ -239,11 +248,7 @@ export const handleSendEmail = async (
     setIsLoading(true);
     await axios.post(
       "https://goflow-8.onrender.com/send-email",
-      {
-        to,
-        subject,
-        body,
-      },
+      { to, subject, body },
       {
         headers: {
           Authorization: `Bearer ${gmailId}`,
