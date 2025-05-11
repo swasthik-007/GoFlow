@@ -43,7 +43,12 @@ const ChatBot = () => {
     if (!recipient.trim()) return;
     setIsLoading(true);
     try {
-      const res = await axios.get("https://goflow-8.onrender.com/emails");
+      const res = await axios.get("https://goflow-8.onrender.com/emails", {
+        headers: {
+          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
+        },
+      });
+
       const recipientLower = recipient.trim().toLowerCase();
       const filteredEmails = res.data.filter(
         (email) =>
@@ -167,7 +172,7 @@ const ChatBot = () => {
       setIsRefining(false);
     }
   };
-const gmailId = user?.primaryEmailAddress?.emailAddress;
+  const gmailId = user?.primaryEmailAddress?.emailAddress;
   const sendReply = async () => {
     if (!query.trim() || emails.length === 0) return;
 
@@ -195,15 +200,14 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
     };
 
     try {
-     const response = await fetch("https://goflow-8.onrender.com/send-email", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${gmailId}`, // ✅ pass Gmail user ID
-  },
-  body: JSON.stringify(emailPayload),
-});
-
+      const response = await fetch("https://goflow-8.onrender.com/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${gmailId}`, // ✅ pass Gmail user ID
+        },
+        body: JSON.stringify(emailPayload),
+      });
 
       if (!response.ok) {
         console.error("Error sending email:", await response.text());

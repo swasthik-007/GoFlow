@@ -47,7 +47,7 @@ export default function CategoryPage() {
     setExpandedEmail,
     expandedEmail,
   } = useCompose();
-const gmailId = user?.primaryEmailAddress?.emailAddress;
+  const gmailId = user?.primaryEmailAddress?.emailAddress;
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromURL = urlParams.get("token");
@@ -71,12 +71,13 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
     try {
       console.log("fetching");
       const response = await axios.get(
-  `https://goflow-8.onrender.com/emails?label=${category}`,
-  { headers: {
-  Authorization: `Bearer ${gmailId}`,
-}
-}
-);
+        `https://goflow-8.onrender.com/emails?label=${category}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
+          },
+        }
+      );
 
       setEmails(response.data);
     } catch (error) {
@@ -90,8 +91,6 @@ const gmailId = user?.primaryEmailAddress?.emailAddress;
   useEffect(() => {
     fetchEmails();
   }, [fetchEmails]);
-
-
 
   const formatEmailBody = (rawHtml) => {
     if (!rawHtml) return "<p>No Content</p>";
