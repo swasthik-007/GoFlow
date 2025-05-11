@@ -1,4 +1,3 @@
-
 import { GenerateLayout_AI } from "@/configs/AiModel";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
@@ -24,7 +23,7 @@ export const handledelete = async (id, setEmails, setIsLoading, user) => {
       `https://goflow-8.onrender.com/emails/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${gmailId}`,
+          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
         },
       }
     );
@@ -251,7 +250,7 @@ export const handleSendEmail = async (
       { to, subject, body },
       {
         headers: {
-          Authorization: `Bearer ${gmailId}`,
+          Authorization: `Bearer ${user?.primaryEmailAddress?.emailAddress}`,
         },
       }
     );
