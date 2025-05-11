@@ -667,12 +667,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { google } from "googleapis";
 import { createClient } from "@supabase/supabase-js";
-import fs from "fs";
 import { simpleParser } from "mailparser";
-import cron from "node-cron";
-import { getEmbedding } from "./utils/embed";
-import { upsertToPinecone } from "./utils/pinecone";
-import { fetchEmailsAndStoreInPinecone } from "./utils/syncEmails";
+
 
 // Initialize environment variables
 dotenv.config();
@@ -684,8 +680,8 @@ app.use(cors());
 
 // Initialize Supabase client
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_KEY!
+  "https://btcksyamxntsccpafbzd.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0Y2tzeWFteG50c2NjcGFmYnpkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjkzOTUxMCwiZXhwIjoyMDYyNTE1NTEwfQ.wG5G5De-gtGLMOClbHP1VxEdyOnIH8BBIBwmxm_a1AE"
 );
 
 // Initialize Google OAuth2 client
@@ -758,72 +754,7 @@ async function ensureValidToken(userId: string) {
 }
 
 // Start Gmail sync job for unread emails
-function startGmailSyncJob(userId: string) {
-  console.log(`🔄 Starting Gmail sync job for user: ${userId}`);
 
-  return cron.schedule("*/10 * * * *", async () => {
-    // Every 10 minutes
-    try {
-      const auth = await ensureValidToken(userId);
-      const gmail = google.gmail({ version: "v1", auth });
-
-      const res = await gmail.users.messages.list({
-        userId: "me",
-        q: "is:unread", // Customize query as needed
-        maxResults: 5,
-      });
-
-      const messages = res.data.messages || [];
-      console.log(`📬 Found ${messages.length} unread messages`);
-
-      for (const message of messages) {
-        const msg = await gmail.users.messages.get({
-          userId: "me",
-          id: message.id!,
-        });
-
-        const snippet = msg.data.snippet || "";
-        const subjectHeader = msg.data.payload?.headers?.find(
-          (h) => h.name === "Subject"
-        );
-        const subject = subjectHeader?.value || "(No Subject)";
-
-        // Embed and send to Pinecone if enabled
-        if (process.env.ENABLE_PINECONE === "true") {
-          try {
-            const vector = await getEmbedding(snippet);
-            await upsertToPinecone({
-              id: `gmail-${message.id}`,
-              values: vector,
-              metadata: {
-                subject,
-                snippet,
-                date: msg.data.internalDate,
-              },
-            });
-          } catch (embedError) {
-            console.error("❌ Error embedding email:", embedError);
-          }
-        }
-
-        // Optionally mark as read
-        if (process.env.MARK_AS_READ === "true") {
-          await gmail.users.messages.modify({
-            userId: "me",
-            id: message.id!,
-            requestBody: {
-              removeLabelIds: ["UNREAD"],
-            },
-          });
-        }
-
-        console.log("📩 Synced email:", subject);
-      }
-    } catch (err) {
-      console.error("❌ Error in Gmail sync job:", err);
-    }
-  });
-}
 
 // Auth URL endpoint
 app.get("/auth-url", (req, res) => {
@@ -1190,39 +1121,14 @@ app.post("/logout", async (req, res) => {
   }
 });
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
-});
+
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 
-  // Start sync jobs for active users if enabled
-  if (process.env.ENABLE_EMAIL_SYNC === "true") {
-    initSyncJobs();
-  }
+
 });
 
-// Initialize sync jobs for all active users
-async function initSyncJobs() {
-  try {
-    const { data, error } = await supabase
-      .from("gmail_tokens")
-      .select("user_id");
-
-    if (error) {
-      console.error("❌ Error loading users for sync jobs:", error);
-      return;
-    }
-
-    console.log(`🔄 Setting up sync jobs for ${data.length} users`);
-    for (const user of data) {
-      startGmailSyncJob(user.user_id);
-    }
-  } catch (error) {
-    console.error("❌ Error initializing sync jobs:", error);
-  }
-}
+// Initialize sync jobs for all active user
