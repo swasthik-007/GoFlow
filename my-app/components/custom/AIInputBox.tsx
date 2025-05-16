@@ -22,7 +22,7 @@ function AIInputBox() {
 
     try {
       // Call your AI model API to generate the email content
-      const result = await axios.post("/api/ai-email-generate", {
+      const result = await axios.post("/api/generate-email", {
         prompt: PROMPT,
       });
       const aiContent = result.data; // Assume it returns the generated content
