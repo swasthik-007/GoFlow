@@ -25,12 +25,26 @@ function AIInputBox() {
       const result = await axios.post("/api/generate-email", {
         prompt: PROMPT,
       });
-      const aiContent = result.data; // Assume it returns the generated content
+      const aiContent = result.data; // { text: "```json\n[...]\n```" }
+      // Assume it returns the generated content
 
-      console.log(aiContent); // Log the AI response for debugging
+      let rawText = aiContent.text.trim();
 
-      // Redirect to the editor page with the generated content as a query parameter
-      const parsedContent = JSON.parse(aiContent.text); // Convert text string to usable array/object
+      // Remove markdown formatting if it exists
+      if (rawText.startsWith("```json")) {
+        rawText = rawText
+          .replace(/^```json/, "")
+          .replace(/```$/, "")
+          .trim();
+      }
+
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(rawText);
+      } catch (err) {
+        console.error("❌ Failed to parse AI response text:", err, rawText);
+        return;
+      }
 
       const query = new URLSearchParams({
         content: JSON.stringify(parsedContent), // Only pass the actual template blocks
