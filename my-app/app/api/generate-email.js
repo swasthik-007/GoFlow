@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { recipientType, tone, purpose } = req.body;
+    const { prompt } = req.body;
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
     try {
       const result = await model.generateText({
-        prompt: `Recipient Type: ${recipientType}, Tone: ${tone}, Purpose: ${purpose}`,
+        prompt, // use directly
         ...generationConfig,
       });
 
