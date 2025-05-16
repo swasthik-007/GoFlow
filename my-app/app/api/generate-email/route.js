@@ -6,35 +6,22 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    console.log("Request body:", body);
+    const { prompt } = await req.json();
 
-    const prompt = body.prompt;
-    if (!prompt) {
-      console.error("Missing prompt in request body");
-      return NextResponse.json({ error: "Missing prompt" }, { status: 400 });
+    if (!prompt || typeof prompt !== "string") {
+      return NextResponse.json({ error: "Invalid prompt" }, { status: 400 });
     }
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash", // You can also use "gemini-pro"
     });
 
-    const generationConfig = {
-      temperature: 1,
-      topP: 0.95,
-      topK: 40,
-      maxOutputTokens: 8192,
-    };
+    const result = await model.generateContent(prompt); // ✅ CORRECT METHOD
+    const text = result.response.text(); // ✅ Extract text safely
 
-    const result = await model.generateText({
-      prompt,
-      ...generationConfig,
-    });
-
-    console.log("Generated response:", result);
-    return NextResponse.json({ text: result.text });
+    return NextResponse.json({ text });
   } catch (error) {
-    console.error("❌ Error generating email:", error);
-    return NextResponse.json({ error: error.message || "Unknown error" }, { status: 500 });
+    console.error("❌ Gemini error:", error);
+    return NextResponse.json({ error: error.message || "Server error" }, { status: 500 });
   }
 }
