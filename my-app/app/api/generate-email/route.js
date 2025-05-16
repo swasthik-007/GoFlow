@@ -6,7 +6,14 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function POST(req) {
   try {
-    const { prompt } = await req.json();
+    const body = await req.json();
+    console.log("Request body:", body);
+
+    const prompt = body.prompt;
+    if (!prompt) {
+      console.error("Missing prompt in request body");
+      return NextResponse.json({ error: "Missing prompt" }, { status: 400 });
+    }
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
@@ -24,9 +31,10 @@ export async function POST(req) {
       ...generationConfig,
     });
 
+    console.log("Generated response:", result);
     return NextResponse.json({ text: result.text });
   } catch (error) {
-    console.error("Error generating email:", error);
-    return NextResponse.json({ error: "Failed to generate email" }, { status: 500 });
+    console.error("❌ Error generating email:", error);
+    return NextResponse.json({ error: error.message || "Unknown error" }, { status: 500 });
   }
 }
