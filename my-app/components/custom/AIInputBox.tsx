@@ -30,9 +30,12 @@ function AIInputBox() {
       console.log(aiContent); // Log the AI response for debugging
 
       // Redirect to the editor page with the generated content as a query parameter
+      const parsedContent = JSON.parse(aiContent.text); // Convert text string to usable array/object
+
       const query = new URLSearchParams({
-        content: JSON.stringify(aiContent),
+        content: JSON.stringify(parsedContent), // Only pass the actual template blocks
       }).toString();
+
       router.push(`/editor/${templateId}?${query}`);
     } catch (e) {
       console.error("Error generating email:", e);

@@ -233,7 +233,14 @@ function Editor() {
 
     if (generatedContent) {
       try {
-        setEmailTemplate(JSON.parse(generatedContent)); // Parse and set the email template
+        try {
+  const parsed = JSON.parse(generatedContent);
+  const template = typeof parsed?.text === "string" ? JSON.parse(parsed.text) : parsed;
+  setEmailTemplate(template);
+} catch (error) {
+  console.error("🚨 Failed to parse email template content:", error);
+}
+ // Parse and set the email template
       } catch (error) {
         console.error("Failed to parse content from URL parameter:", error);
       }
